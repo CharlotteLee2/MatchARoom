@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -12,21 +11,21 @@ model Site {
   id        Int       @id @default(autoincrement())
   name      String    @unique
   baseUrl   String
-  listings  Listing[]
   createdAt DateTime  @default(now())
+  listings  Listing[]
 }
 
 model Listing {
-  id          Int         @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   address     String?
   price       Int?
-  link        String      @unique
+  link        String     @unique
   imageUrl    String?
-  dateScraped DateTime    @default(now())
+  dateScraped DateTime   @default(now())
   siteId      Int
-  site        Site        @relation(fields: [siteId], references: [id])
-  favorites   Favorite[]  // 👈 added this line
+  favorites   Favorite[]
+  site        Site       @relation(fields: [siteId], references: [id])
 }
 
 model User {
@@ -34,6 +33,7 @@ model User {
   email     String     @unique
   name      String?
   createdAt DateTime   @default(now())
+  password  String
   favorites Favorite[]
 }
 
@@ -42,9 +42,8 @@ model Favorite {
   userId    Int
   listingId Int
   createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id])
   listing   Listing  @relation(fields: [listingId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, listingId])
 }
