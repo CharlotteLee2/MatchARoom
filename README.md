@@ -1,2 +1,2 @@
 # MatchARoom
-Website for UB students to chat and pick their roomates!
+Website for UB students to chat and pick their roommates!
