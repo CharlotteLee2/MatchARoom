@@ -1,9 +1,9 @@
-"use client";
+
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { createProfileStack } from "./card";
 
-export const metadata = {
+export const pageMetadata = {
   title: "Swipe - MatchARoom",
 };
 
@@ -61,3 +61,4 @@ export default function SwipePage() {
   );
 }
 
+ 
