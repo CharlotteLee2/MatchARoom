@@ -10,7 +10,7 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
-    "scrape": "npx tsc -p tsconfig.scripts.json && node dist/scripts/stationBuffaloScraper.js"
+    "scrape": "npx tsc -p tsconfig.scripts.json && node dist/scripts/scraper.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
