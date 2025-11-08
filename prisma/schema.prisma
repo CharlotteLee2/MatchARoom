@@ -17,16 +17,16 @@ model Site {
 }
 
 model Listing {
-  id          Int        @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   address     String?
   price       Int?
-  link        String     @unique
+  link        String      @unique
   imageUrl    String?
-  dateScraped DateTime   @default(now())
+  dateScraped DateTime    @default(now())
   siteId      Int
-  site        Site       @relation(fields: [siteId], references: [id])
-  favorites   Favorite[] // 👈 added this line
+  site        Site        @relation(fields: [siteId], references: [id])
+  favorites   Favorite[]  // 👈 added this line
 }
 
 model User {
@@ -43,8 +43,8 @@ model Favorite {
   listingId Int
   createdAt DateTime @default(now())
 
-  user    User    @relation(fields: [userId], references: [id])
-  listing Listing @relation(fields: [listingId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
 
   @@unique([userId, listingId])
 }
