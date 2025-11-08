@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+
+type HeaderProps = {
+  onToggleChat?: () => void;
+};
 
 type Room = {
   id: string;
   title: string;
-  price?: number;
 };
 
-export default function Header() {
+export default function Header({ onToggleChat }: HeaderProps) {
   const [liked, setLiked] = useState<Room[]>([]);
+  const [logoSrc, setLogoSrc] = useState<string>('/images/matcharoom_logo_v2.png');
 
   useEffect(() => {
     try {
@@ -20,37 +23,40 @@ export default function Header() {
     } catch (e) {
       setLiked([]);
     }
+    // set a cache-busted logo source once on mount so updates to the file are picked up by the browser
+    setLogoSrc(`/images/matcharoom_logo_v2.png?v=${Date.now()}`);
   }, []);
 
   return (
-    <header className="w-full border-b border-gray-200 bg-white/60 backdrop-blur-sm">
-      <div className="mx-auto max-w-4xl px-6 py-4 flex items-center justify-between">
+    <header className="w-full border-b" style={{ backgroundColor: "#467f36" }}>
+      <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
-            <Image src="/images/matcharoom_logo.png" alt="MatchARoom logo" width={50} height={36} priority />
-            <span className="text-xl font-semibold text-gray-900">MatchARoom</span>
+            {/* use a cache-busted src to ensure updated logo file is loaded */}
+            <img src={logoSrc} alt="MatchARoom logo" width={40} height={40} />
+            <span className="font-semibold text-lg text-white">MatchARoom</span>
           </Link>
-          <nav className="hidden sm:flex gap-3 text-sm text-gray-600">
-            <Link href="/forum" className="hover:underline">
-              Forum
-            </Link>
-            <Link href="/swipe" className="hover:underline">
-              Swipe
-            </Link>
-          </nav>
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/interested" className="relative">
-            <button className="rounded-full bg-gray-100 px-3 py-1 text-sm">
-              Interested
-            </button>
-            {liked.length > 0 && (
-              <span className="absolute -right-2 -top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {liked.length}
-              </span>
-            )}
+          <Link href="/forum" className="text-white hover:underline flex items-center gap-2">
+            <img src="/images/add_forum_icon.png" alt="add forum" className="w-6 h-6" />
+            <span className="hidden sm:inline"></span>
           </Link>
+
+          <Link href="/swipe" className="text-white hover:underline flex items-center gap-2">
+            <span className="hidden sm:inline">Swipe</span>
+          </Link>
+
+          <button
+            onClick={() => onToggleChat && onToggleChat()}
+            aria-label="Open Chat"
+            className="relative inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20"
+          >
+            <img src="/images/chat_icon.png" alt="chat" className="w-5 h-5" />
+          </button>
+
+          {/* Interested button removed per request */}
         </div>
       </div>
     </header>

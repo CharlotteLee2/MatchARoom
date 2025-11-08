@@ -1,8 +1,6 @@
-import Link from "next/link";
+"use client";
 
-export const metadata = {
-  title: "Register - MatchARoom",
-};
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (

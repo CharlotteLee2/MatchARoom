@@ -1,8 +1,6 @@
-import Link from "next/link";
+"use client";
 
-export const metadata = {
-  title: "Log in - MatchARoom",
-};
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
