@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { validateEmailDomain } from '@/app/auth/email'
 import { useRouter } from 'next/navigation'
+import { signup, login } from './actions'
 
-export default function LoginPage() {
+export default function SignInPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,19 +29,10 @@ export default function LoginPage() {
     }
 
     try {
-      const endpoint = isSignUp ? '/api/auth/signup' : '/api/auth/login'
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
+      const result = isSignUp ? await signup(email, password) : await login(email, password)
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong')
+      if (result.error) {
+        throw new Error(result.error)
       }
 
       if (isSignUp) {

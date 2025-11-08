@@ -39,9 +39,9 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/interested" className="relative">
-            <button className="rounded-full bg-gray-100 px-3 py-1 text-sm">
-              Interested
+          <Link href="/auth/signin" className="relative">
+            <button className="rounded-full bg-gray-100 px-3 py-1 text-sm text-black hover:bg-gray-400 transition-colors cursor-pointer">
+              Sign In
             </button>
             {liked.length > 0 && (
               <span className="absolute -right-2 -top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
