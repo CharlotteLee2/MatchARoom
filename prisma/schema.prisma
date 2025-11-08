@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -26,7 +25,7 @@ model Listing {
   dateScraped DateTime    @default(now())
   siteId      Int
   site        Site        @relation(fields: [siteId], references: [id])
-  favorites   Favorite[]  // 👈 added this line
+  favorites   Favorite[]
 }
 
 model User {
