@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type Room = {
@@ -25,8 +26,9 @@ export default function Header() {
     <header className="w-full border-b border-gray-200 bg-white/60 backdrop-blur-sm">
       <div className="mx-auto max-w-4xl px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-xl font-semibold">
-            MatchARoom
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/images/matcharoom_logo.png" alt="MatchARoom logo" width={50} height={36} priority />
+            <span className="text-xl font-semibold text-gray-900">MatchARoom</span>
           </Link>
           <nav className="hidden sm:flex gap-3 text-sm text-gray-600">
             <Link href="/forum" className="hover:underline">
