@@ -15,25 +15,31 @@ export async function signup(email: string, password: string) {
       return { error: 'Email and password are required' }
     }
 
+    console.log('Attempting to create user with email:', email)
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     })
 
     if (existingUser) {
+      console.log('User already exists:', email)
       return { error: 'User with this email already exists' }
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
+    console.log('Password hashed successfully')
 
-    // Create user
+    // Create user in database
+    console.log('Creating user in database...')
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
       },
     })
+    console.log('User created successfully:', { id: user.id, email: user.email })
 
     // Create JWT token
     const token = await new SignJWT({ userId: user.id })
@@ -52,8 +58,20 @@ export async function signup(email: string, password: string) {
 
     return { success: true, user: { id: user.id, email: user.email } }
   } catch (error: any) {
-    console.error('Signup error:', error)
-    return { error: 'Failed to create account' }
+    console.error('Signup error details:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+    })
+    // Return more specific error message
+    if (error?.code === 'P2002') {
+      return { error: 'User with this email already exists' }
+    }
+    // Return detailed error for debugging
+    const errorMessage = error?.message || 'Unknown error'
+    console.error('Full error object:', JSON.stringify(error, null, 2))
+    return { error: `Failed to create account: ${errorMessage}` }
   }
 }
 

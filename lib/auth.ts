@@ -16,7 +16,7 @@ export async function getCurrentUser() {
     }
 
     const { payload } = await jwtVerify(token, secret)
-    const userId = payload.userId as string
+    const userId = payload.userId as number
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
