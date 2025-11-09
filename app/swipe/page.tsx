@@ -83,41 +83,66 @@ export default function SwipePage() {
   }, []);
 
   return (
-    <main className="pt-8 pb-20">
-      <div className="mx-auto max-w-md px-6 text-center text-gray-700">
-        {/* Page Title */}
-        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#356859' }}>Swipe</h1>
-        <div className="mb-6 space-y-2">
-  <p className="text-gray-600">
-    Swipe left or right to explore roommate profiles!
-  </p>
-  <p className="text-sm text-gray-500">
-    <span className="font-semibold text-red-500">Swipe left</span> to pass •
-    <span className="font-semibold text-green-500"> Swipe right</span> to match
-  </p>
-</div>
-        <div
-          ref={c}
-          id="ProfileCard"
-          className="relative w-full h-[450px] flex justify-center items-center"
-        ></div>
-        <div className="flex gap-4 mt-6 justify-center">
-          <Link 
-            href="/" 
-            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
-          >
-            Back to Home
-          </Link>
-          <Link 
-            href="/forum" 
-            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
-          >
-            Go to Forum
-          </Link>
+ <main className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-12 px-4">
+      <div className="mx-auto max-w-lg">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-black mb-3 bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
+            Swipe
+          </h1>
+          <p className="text-gray-600 text-lg font-medium mb-3">
+            Discover Your Perfect Roommate Match
+          </p>
+          
+          {/* Instruction Pills */}
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <div className="flex items-center gap-1.5 bg-red-50 px-4 py-2 rounded-full border border-red-100">
+              <span className="text-2xl">👈</span>
+              <span className="font-semibold text-red-600">Pass</span>
+            </div>
+            <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+            <div className="flex items-center gap-1.5 bg-green-50 px-4 py-2 rounded-full border border-green-100">
+              <span className="text-2xl">👉</span>
+              <span className="font-semibold text-green-600">Match</span>
+            </div>
+          </div>
         </div>
+
+        {/* Card Container with Enhanced Shadow */}
+        <div className="relative mb-8">
+          <div
+            ref={c}
+            id="ProfileCard"
+            className="relative w-full h-[480px] flex justify-center items-center"
+          ></div>
+          
+          {/* Decorative Background Elements */}
+          <div className="absolute -z-10 top-8 left-8 w-full h-full bg-gradient-to-br from-green-100 to-emerald-100 rounded-3xl opacity-20"></div>
+        </div>
+
+        {/* Navigation Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="flex gap-3">
+            <Link 
+              href="/" 
+              className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 text-center"
+            >
+              🏠 Home
+            </Link>
+            <Link 
+              href="/forum" 
+              className="flex-1 px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 text-center"
+            >
+              💬 Forum
+            </Link>
+          </div>
+        </div>
+
+        {/* Footer Tip */}
+        <p className="text-center text-sm text-gray-500 mt-6 font-medium">
+          💡 Click the buttons or use keyboard arrows to navigate
+        </p>
       </div>
     </main>
   );
 }
-
- 
