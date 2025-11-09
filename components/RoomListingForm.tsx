@@ -3,23 +3,25 @@ import React, { useState } from "react";
 export type RoomFormData = {
   title: string;
   price: string;
-  image: File | null;
+  image: File | string | null;
+  community: string;
 };
 
-type RoomListingFormProps = {
+type Props = {
   onCreate: (data: RoomFormData) => void;
+  communities: string[];
 };
 
-export default function RoomListingForm({ onCreate }: RoomListingFormProps) {
+export default function RoomListingForm({ onCreate, communities }: Props) {
   const [form, setForm] = useState<RoomFormData>({
     title: "",
     price: "",
     image: null,
+    community: "",
   });
-
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   }
@@ -30,30 +32,19 @@ export default function RoomListingForm({ onCreate }: RoomListingFormProps) {
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onCreate(form);
-    setForm({ title: "", price: "", image: null });
+    setForm({ title: "", price: "", image: null, community: "" });
     setPreviewUrl(null);
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-        maxWidth: "400px",
-        margin: "2rem auto",
-        background: "#fff",
-        padding: "1.5rem",
-        borderRadius: "10px",
-        boxShadow: "0 2px 8px #aaa",
-      }}
+      className="flex flex-col gap-4 p-6 mx-auto my-8 max-w-lg rounded-2xl shadow-xl bg-white border-2 border-blue-200"
     >
-      <label style={{ fontWeight: "bold" }}>
-        Room Title
+      <label className="font-bold">Room Title
         <input
           name="title"
           type="text"
@@ -61,17 +52,10 @@ export default function RoomListingForm({ onCreate }: RoomListingFormProps) {
           onChange={handleChange}
           placeholder="Room Title"
           required
-          style={{
-            width: "100%",
-            padding: ".5rem",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            marginTop: ".5rem",
-          }}
+          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-blue-300"
         />
       </label>
-      <label style={{ fontWeight: "bold" }}>
-        Monthly Price
+      <label className="font-bold">Monthly Price
         <input
           name="price"
           type="text"
@@ -79,50 +63,36 @@ export default function RoomListingForm({ onCreate }: RoomListingFormProps) {
           onChange={handleChange}
           placeholder="Monthly Price"
           required
-          style={{
-            width: "100%",
-            padding: ".5rem",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            marginTop: ".5rem",
-          }}
+          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-blue-300"
         />
       </label>
-      <label style={{ fontWeight: "bold" }}>
-        Room Photo
+      <label className="font-bold">Community
+        <select
+          name="community"
+          value={form.community}
+          onChange={handleChange}
+          required
+          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-green-300"
+        >
+          <option value="">Select a Community</option>
+          {communities.map(c => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </label>
+      <label className="font-bold">Room Photo
         <input
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          style={{ marginTop: ".5rem" }}
+          className="mt-1"
         />
       </label>
-      {previewUrl && (
-        <img
-          src={previewUrl}
-          alt="Preview"
-          style={{
-            width: "270px",
-            borderRadius: "8px",
-            margin: "1rem 0",
-          }}
-        />
-      )}
+      {previewUrl && <img src={previewUrl} alt="Preview" className="w-64 rounded-md border mx-auto my-4" />}
       <button
         type="submit"
-        style={{
-          padding: "0.7rem 1.2rem",
-          borderRadius: "6px",
-          border: "none",
-          background: "#3366ee",
-          color: "#fff",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 1px 3px #ddd",
-        }}
-      >
-        Submit Listing
-      </button>
+        className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-8 py-3 text-white font-extrabold shadow-lg hover:from-blue-700 hover:to-blue-900"
+      >Create Listing</button>
     </form>
   );
 }

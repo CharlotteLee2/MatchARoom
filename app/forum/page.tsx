@@ -1,137 +1,217 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import RoomListingForm, { RoomFormData } from "../../components/RoomListingForm";
+import { v4 as uuidv4 } from "uuid";
 
-type Reply = { text: string };
-type Comment = { text: string; replies?: Reply[] };
+type PostWithId = RoomFormData & { id: string };
 
-// File or string url support
-function getImageUrl(image: File | string | null): string | null {
-  if (!image) return null;
-  if (typeof image === "string") return image;
-  return URL.createObjectURL(image);
-}
+const FAKE_COMMUNITIES = [
+  "Looking For a Roommate",
+  "Roommate Needed ASAP",
+  "Sublet/Lease Takeover",
+  "Girls Roommate Search",
+  "Guys Roommate Search",
+  "Buffalo Apartments Connect",
+  "Pets Welcome",
+  "Station Residents",
+  "Auden Buffalo",
+  "Chestnut Place",
+  "Chill Roommates",
+  "Move-In Help",
+  "Cheap Housing Deals"
+];
+
+const FAKE_POSTS: PostWithId[] = [
+  {
+    title: "1 Bedroom Open – Station (Fall)",
+    price: "950",
+    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=400&q=80",
+    community: "Looking For a Roommate",
+    id: "1a"
+  },
+  {
+    title: "Roommate Needed for 2BR @ Auden",
+    price: "825",
+    image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80",
+    community: "Roommate Needed ASAP",
+    id: "2b"
+  },
+  {
+    title: "1 Room Available – Chestnut Place (Spring Sublet)",
+    price: "900",
+    image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
+    community: "Sublet/Lease Takeover",
+    id: "3c"
+  },
+  {
+    title: "Girls Apartment — Station, Private Bath",
+    price: "960",
+    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+    community: "Girls Roommate Search",
+    id: "4d"
+  },
+  {
+    title: "Sublet Needed @ Auden (Jan–May)",
+    price: "830",
+    image: "https://images.unsplash.com/photo-1482062364825-616fd23b8fc1?auto=format&fit=crop&w=400&q=80",
+    community: "Sublet/Lease Takeover",
+    id: "5e"
+  },
+  {
+    title: "3 Bedroom – Chestnut, All Genders Welcome",
+    price: "860",
+    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+    community: "Buffalo Apartments Connect",
+    id: "6f"
+  }
+];
 
 export default function ForumPage() {
-  const [posts, setPosts] = useState<RoomFormData[]>([]);
+  const [posts, setPosts] = useState<PostWithId[]>([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
-  const [comments, setComments] = useState<Record<number, Comment[]>>({});
-  const [showInterested, setShowInterested] = useState(false);
+  const [showCommunityModal, setShowCommunityModal] = useState(false);
+  const [newCommunity, setNewCommunity] = useState("");
+  const [communities, setCommunities] = useState<string[]>([]);
   const [modalImage, setModalImage] = useState<string | null>(null);
-  const [replyTo, setReplyTo] = useState<{ postIdx: number; commentIdx: number } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedPosts = window.localStorage.getItem("forumposts");
+    const storedComms = window.localStorage.getItem("communities");
+
+    if (!storedPosts && !storedComms) {
+      setPosts(FAKE_POSTS);
+      setCommunities(FAKE_COMMUNITIES);
+      window.localStorage.setItem("forumposts", JSON.stringify(FAKE_POSTS));
+      window.localStorage.setItem("communities", JSON.stringify(FAKE_COMMUNITIES));
+    } else {
+      if (storedPosts) setPosts(JSON.parse(storedPosts));
+      if (storedComms) setCommunities(JSON.parse(storedComms));
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("forumposts", JSON.stringify(posts));
+      window.localStorage.setItem("communities", JSON.stringify(communities));
+    }
+  }, [posts, communities]);
+
+  function getImageUrl(image: File | string | null | undefined): string | null {
+    if (!image) return null;
+    if (typeof image === "string") return image;
+    if (typeof window !== "undefined" && image instanceof File) {
+      return URL.createObjectURL(image);
+    }
+    return null;
+  }
 
   function handleCreate(newPost: RoomFormData) {
-    setPosts(prev => [newPost, ...prev]);
+    const toAdd: PostWithId = { ...newPost, id: uuidv4() };
+    setPosts(prev => [toAdd, ...prev]);
     setShowForm(false);
   }
-  function toggleLike(index: number) {
-    setLikedPosts(prev => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
-  }
-  function addComment(index: number, text: string) {
-    setComments(prev => {
-      const next = { ...prev };
-      if (!next[index]) next[index] = [];
-      next[index] = [...next[index], { text }];
-      return next;
-    });
-  }
-  function addReply(postIdx: number, commentIdx: number, text: string) {
-    setComments(prev => {
-      const postComments = prev[postIdx] || [];
-      const updated = postComments.map((c, i) =>
-        i === commentIdx
-          ? { ...c, replies: [...(c.replies || []), { text }] }
-          : c
-      );
-      return { ...prev, [postIdx]: updated };
-    });
-    setReplyTo(null);
+
+  function handleAddCommunity(e: React.FormEvent) {
+    e.preventDefault();
+    if (newCommunity.trim() && !communities.includes(newCommunity.trim())) {
+      setCommunities(prev => [...prev, newCommunity.trim()]);
+      setNewCommunity("");
+      setShowCommunityModal(false);
+    }
   }
 
-  const displayedPosts = posts
-    .map((p, i) => ({ ...p, _idx: i }))
-    .filter(({ title, price, _idx }) =>
-      (title.toLowerCase().includes(search.toLowerCase()) ||
-        price.toLowerCase().includes(search.toLowerCase())) &&
-      (!showInterested || likedPosts.has(_idx))
-    );
+  const filtered = posts.filter(
+    p =>
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.price.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <main className="py-20">
       <div className="mx-auto max-w-4xl px-6 text-gray-600">
 
-        {/* SEARCH BAR (top, rounded) */}
-        <div className="flex w-full mb-8">
-          <input
-            type="text"
-            placeholder="Search room titles or prices..."
-            className="flex-grow rounded-full border px-4 py-2 shadow-sm focus:outline-none mr-4"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-
-        {/* HEADER + CREATE POST + INTERESTED BUTTONS */}
+        {/* BUTTONS TOGETHER */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-2xl font-semibold">Community Forum</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowInterested(i => !i)}
-              className={`rounded-full px-5 py-2 font-medium shadow
-                ${showInterested ? "bg-yellow-500 text-white" : "bg-gray-200 text-gray-700"}
-                transition hover:bg-yellow-600`}
-            >
-              Interested
-            </button>
+          <div className="flex gap-4">
             <button
               onClick={() => setShowForm(show => !show)}
-              className="rounded-full bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 shadow"
+              className="rounded-full bg-blue-600 px-5 py-2 font-semibold text-white shadow transition hover:bg-blue-700"
             >
               {showForm ? "Close" : "Create Post"}
             </button>
+            <button
+              onClick={() => setShowCommunityModal(true)}
+              className="rounded-full bg-green-600 px-5 py-2 font-semibold text-white shadow transition hover:bg-green-700"
+            >
+              Create Community
+            </button>
           </div>
         </div>
 
-        {/* POST FORM */}
-        {showForm && (
-          <div className="mb-6">
-            <RoomListingForm onCreate={handleCreate} />
-          </div>
-        )}
-
-        {/* NO RESULTS */}
-        {displayedPosts.length === 0 && (
-          <div className="mb-8 text-center text-gray-400">
-            {showInterested ? "No interested posts yet." : "No posts found."}
-          </div>
-        )}
-
-        {/* POSTS LIST */}
-        <div className="space-y-8">
-          {displayedPosts.map((p, idx) => (
-            <article key={p._idx} className="rounded-md border p-4">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-lg font-medium">{p.title}</h3>
+        {/* COMMUNITY MODAL */}
+        {showCommunityModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+            <form
+              onSubmit={handleAddCommunity}
+              className="bg-white rounded shadow p-6 flex flex-col"
+              style={{ minWidth: 280 }}
+            >
+              <label className="mb-2 font-semibold">Community Name:</label>
+              <input
+                type="text"
+                value={newCommunity}
+                onChange={e => setNewCommunity(e.target.value)}
+                className="border rounded px-2 py-1 mb-4"
+                required
+              />
+              <div className="flex gap-3">
                 <button
-                  aria-label="Like"
-                  onClick={() => toggleLike(p._idx!)}
-                  className="text-red-500 hover:text-red-600 text-xl"
-                >
-                  {likedPosts.has(p._idx!) ? (
-                    <span>&#10084;&#65039;</span>
-                  ) : (
-                    <span>&#9825;</span>
-                  )}
-                </button>
+                  type="submit"
+                  className="bg-blue-600 rounded text-white px-4 py-1"
+                >Create</button>
+                <button
+                  type="button"
+                  className="bg-gray-300 rounded px-3"
+                  onClick={() => setShowCommunityModal(false)}
+                >Cancel</button>
               </div>
+            </form>
+          </div>
+        )}
+
+        <input
+          type="text"
+          placeholder="Search room titles or prices..."
+          className="flex-grow rounded-full border px-4 py-2 shadow-sm focus:outline-none mr-4 w-full mb-8"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        {showForm &&
+          <RoomListingForm
+            onCreate={handleCreate}
+            communities={communities}
+          />
+        }
+        {filtered.length === 0 && (
+          <div className="mb-8 text-center text-gray-400">No posts found.</div>
+        )}
+        <div className="space-y-8">
+          {filtered.map(p => (
+            <article key={p.id} className="rounded-md border p-4">
+              <Link
+                href={`/forum/${p.id}`}
+                className="text-lg font-medium text-blue-600 hover:underline"
+              >
+                {p.title}
+              </Link>
+              {p.community && (
+                <span className="ml-2 text-sm bg-blue-50 px-2 py-1 rounded">
+                  {p.community}
+                </span>
+              )}
               <div className="font-bold text-blue-600">${p.price}</div>
               {p.image && getImageUrl(p.image) && (
                 <img
@@ -139,55 +219,15 @@ export default function ForumPage() {
                   alt={p.title}
                   className="mt-2 w-full max-w-xs rounded cursor-pointer transition hover:scale-105"
                   style={{ maxHeight: 128 }}
-                  onClick={() => setModalImage(getImageUrl(p.image)!)}
+                  onClick={e => {
+                    e.preventDefault();
+                    setModalImage(getImageUrl(p.image)!);
+                  }}
                 />
               )}
-              {/* COMMENTS SECTION */}
-              <div className="mt-6">
-                <h4 className="font-semibold mb-2 text-base">Comments</h4>
-                <ul className="mb-2 space-y-2">
-                  {(comments[p._idx!] || []).map((c, ci) => (
-                    <li key={ci} className="border rounded px-2 py-1 bg-gray-50">
-                      <div className="flex justify-between items-center">
-                        <span>{c.text}</span>
-                        <button
-                          className="text-xs text-blue-600 hover:underline ml-4"
-                          type="button"
-                          onClick={() => setReplyTo({ postIdx: p._idx!, commentIdx: ci })}
-                        >
-                          Reply
-                        </button>
-                      </div>
-                      {/* Replies */}
-                      {c.replies && c.replies.length > 0 && (
-                        <ul className="ml-6 mt-2 space-y-1 text-sm text-gray-700">
-                          {c.replies.map((r, ri) => (
-                            <li key={ri} className="pl-2 border-l">{r.text}</li>
-                          ))}
-                        </ul>
-                      )}
-                      {/* Reply form */}
-                      {replyTo &&
-                        replyTo.postIdx === p._idx! &&
-                        replyTo.commentIdx === ci && (
-                          <ReplyForm
-                            onSubmit={text =>
-                              addReply(p._idx!, ci, text)
-                            }
-                            onCancel={() => setReplyTo(null)}
-                          />
-                        )}
-                    </li>
-                  ))}
-                </ul>
-                <CommentForm
-                  onSubmit={text => addComment(p._idx!, text)}
-                />
-              </div>
             </article>
           ))}
         </div>
-
         {/* MODAL for fullscreen image */}
         {modalImage && (
           <div
@@ -208,7 +248,6 @@ export default function ForumPage() {
             >&times;</button>
           </div>
         )}
-
         <div className="mt-8 text-center">
           <Link href="/" className="text-blue-600">
             Back to Home
@@ -216,80 +255,5 @@ export default function ForumPage() {
         </div>
       </div>
     </main>
-  );
-}
-
-// Comment form
-function CommentForm({ onSubmit }: { onSubmit: (text: string) => void }) {
-  const [text, setText] = useState("");
-  return (
-    <form
-      className="flex gap-2"
-      onSubmit={e => {
-        e.preventDefault();
-        if (text.trim()) {
-          onSubmit(text.trim());
-          setText("");
-        }
-      }}
-    >
-      <input
-        type="text"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Add a comment..."
-        className="rounded-full border px-3 py-1 flex-grow"
-      />
-      <button
-        type="submit"
-        className="rounded bg-blue-500 px-4 py-1 text-white font-medium hover:bg-blue-600"
-      >
-        Send
-      </button>
-    </form>
-  );
-}
-
-// Reply form
-function ReplyForm({
-  onSubmit,
-  onCancel
-}: {
-  onSubmit: (text: string) => void;
-  onCancel: () => void;
-}) {
-  const [text, setText] = useState("");
-  return (
-    <form
-      className="flex gap-2 mt-2 ml-4"
-      onSubmit={e => {
-        e.preventDefault();
-        if (text.trim()) {
-          onSubmit(text.trim());
-          setText("");
-        }
-      }}
-    >
-      <input
-        type="text"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Reply..."
-        className="rounded-full border px-2 py-0.5 flex-grow"
-      />
-      <button
-        type="submit"
-        className="rounded bg-blue-400 px-3 py-1 text-white text-xs hover:bg-blue-600"
-      >
-        Reply
-      </button>
-      <button
-        type="button"
-        onClick={onCancel}
-        className="rounded bg-gray-300 px-2 py-1 text-xs ml-1"
-      >
-        Cancel
-      </button>
-    </form>
   );
 }
