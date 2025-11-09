@@ -29,7 +29,7 @@ export default function Header({ onToggleChat }: HeaderProps) {
 
   return (
     <header className="w-full border-b" style={{ backgroundColor: "#467f36" }}>
-      <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+  <div className="mx-auto max-w-6xl pl-4 pr-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
             {/* use a cache-busted src to ensure updated logo file is loaded */}
