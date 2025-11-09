@@ -2,8 +2,8 @@ export function createProfileCard(options: { title: string; age?: number; descri
     const card = document.createElement('div');
     card.className = 'profile-card';
     card.innerHTML = `
-        <div class="overlay like" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; color: #4ade80; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;">FAVORITE 💚</div>
-        <div class="overlay nope" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; color: #ef4444; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;">HELL NAH ❌</div>
+        <div class="overlay like">FAVORITE 💚</div>
+        <div class="overlay nope">HELL NAH ❌</div>
         <img src="${options.image}" alt="${options.title}" />
         <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
         <p>${options.description}</p>
