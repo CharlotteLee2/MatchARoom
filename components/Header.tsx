@@ -28,9 +28,9 @@ export default function Header({ onToggleChat }: HeaderProps) {
   }, []);
 
   return (
-    <header className="w-full border-b" style={{ backgroundColor: "#467f36" }}>
-  <div className="mx-auto max-w-6xl pl-4 pr-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+  <header className="sticky top-0 z-50 w-full border-b shadow-md" style={{ backgroundColor: "#467f36" }}>
+      <div className="w-full pl-4 pr-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-4 flex-1">
           <Link href="/" className="flex items-center gap-3">
             {/* use a cache-busted src to ensure updated logo file is loaded */}
             <img src={logoSrc} alt="MatchARoom logo" width={40} height={40} />
@@ -38,18 +38,7 @@ export default function Header({ onToggleChat }: HeaderProps) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/interested" className="relative">
-            <button className="rounded-full bg-gray-100 px-3 py-1 text-sm">
-              Interested
-            </button>
-            {liked.length > 0 && (
-              <span className="absolute -right-2 -top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {liked.length}
-              </span>
-            )}
-          </Link>
-
+  <div className="flex items-center gap-4 justify-end">
           <button
             onClick={() => onToggleChat && onToggleChat()}
             aria-label="Open Chat"
@@ -58,7 +47,11 @@ export default function Header({ onToggleChat }: HeaderProps) {
             <img src="/images/chat_icon.png" alt="chat" className="w-5 h-5" />
           </button>
 
-          {/* Interested button removed per request */}
+          <Link href="/forum" aria-label="Go to forum" className="inline-flex items-center">
+            <button className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20" aria-hidden>
+              <img src="/images/add_forum_icon.png" alt="forum" className="w-5 h-5" />
+            </button>
+          </Link>
         </div>
       </div>
     </header>
