@@ -32,11 +32,11 @@ const profiles = [
   },
   {
     id: "4",
-    name: "Ivan Lee",
+    name: "Ivan Wu",
     age: 21,
     description: "Easy-going and loves to eat out. SHORT KINGS STAND UP!",
     interestedIn: "The Station",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan%20Lee",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan%20Wu",
   },
   {
     id: "5",
