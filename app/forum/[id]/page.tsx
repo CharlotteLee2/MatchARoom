@@ -1,11 +1,11 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { RoomFormData } from "../../../components/RoomListingForm";
 
 type Reply = { text: string };
 type Comment = { text: string; replies?: Reply[] };
+type PostWithId = RoomFormData & { id: string };
 
 function getImageUrl(image: File | string | null | undefined): string | null {
   if (!image) return null;
@@ -23,6 +23,7 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyTo, setReplyTo] = useState<number | null>(null);
   const [modalImage, setModalImage] = useState<string | null>(null);
+  const [otherPosts, setOtherPosts] = useState<PostWithId[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -31,6 +32,7 @@ export default function PostDetailPage() {
       const arr = JSON.parse(stored);
       const found = arr.find((p: any) => p.id === id);
       setPost(found ?? null);
+      setOtherPosts(arr.filter((p: any) => p.id !== id));
     }
     const cs = window.localStorage.getItem("forumcomments_" + id);
     if (cs) setComments(JSON.parse(cs));
@@ -41,7 +43,7 @@ export default function PostDetailPage() {
     window.localStorage.setItem("forumcomments_" + id, JSON.stringify(comments));
   }, [comments, id]);
 
-  // Like logic per post (optional, see above for like button code)
+  // Like logic per post
   const [liked, setLiked] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined" || !id) return;
@@ -71,35 +73,36 @@ export default function PostDetailPage() {
   if (!post) return <div className="p-12 text-center">Post not found.</div>;
 
   return (
-    <main className="py-20">
-      <div className="mx-auto max-w-2xl px-6 text-gray-600">
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-2xl font-semibold">{post.title}</h2>
-          <button
-            onClick={toggleLike}
-            className={`text-xl ml-2 ${liked ? "text-red-600" : "text-gray-400"}`}
-            aria-label="Like"
-          >
-            {liked ? <span>&#10084;&#65039;</span> : <span>&#9825;</span>}
-          </button>
+    <main className="py-10 bg-gray-50 min-h-screen">
+      <div className="mx-auto max-w-lg px-2">
+        {/* POST CARD */}
+        <div className="bg-white rounded-lg shadow px-4 py-3 mb-6 flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold truncate">{post.title}</h2>
+            <button
+              onClick={toggleLike}
+              className={`text-lg ${liked ? "text-red-500" : "text-gray-400"}`}
+              aria-label="Like"
+              title={liked ? "Unlike" : "Like"}
+            >
+              {liked ? <span>&#10084;&#65039;</span> : <span>&#9825;</span>}
+            </button>
+          </div>
+          <div className="flex items-center text-sm gap-2">
+            {post.community && (
+              <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium">{post.community}</span>
+            )}
+            <span className="text-gray-400 ml-auto font-semibold">${post.price}</span>
+          </div>
+          {post.image && getImageUrl(post.image) && (
+            <img
+              src={getImageUrl(post.image)!}
+              alt={post.title}
+              className="rounded-md cursor-pointer my-2 transition hover:scale-105 max-h-56 object-cover w-full shadow"
+              onClick={() => setModalImage(getImageUrl(post.image)!)}
+            />
+          )}
         </div>
-        {post.community && (
-          <span className="mb-2 inline-block text-sm bg-blue-50 px-2 py-1 rounded">
-            {post.community}
-          </span>
-        )}
-        <div className="font-bold text-blue-600 mb-2">${post.price}</div>
-
-        {/* Ensure image is always shown if available */}
-        {post.image && getImageUrl(post.image) && (
-          <img
-            src={getImageUrl(post.image)!}
-            alt={post.title}
-            className="rounded mb-4 cursor-pointer hover:scale-105 transition"
-            style={{ maxHeight: 300 }}
-            onClick={() => setModalImage(getImageUrl(post.image)!)}
-          />
-        )}
         {/* MODAL for fullscreen image */}
         {modalImage && (
           <div
@@ -120,17 +123,16 @@ export default function PostDetailPage() {
             >&times;</button>
           </div>
         )}
-
-        {/* Comment thread */}
-        <div className="mt-6">
-          <h4 className="font-semibold mb-2 text-base">Comments</h4>
-          <ul className="mb-2 space-y-2">
+        {/* COMMENT THREAD */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <h4 className="font-semibold text-gray-700 mb-3 text-base">Comments</h4>
+          <ul className="mb-3 space-y-2 text-[15px]">
             {comments.map((c, ci) => (
-              <li key={ci} className="border rounded px-2 py-1 bg-gray-50">
+              <li key={ci} className="border rounded px-2 py-1 bg-gray-50 flex flex-col gap-1">
                 <div className="flex justify-between items-center">
                   <span>{c.text}</span>
                   <button
-                    className="text-xs text-blue-600 hover:underline ml-4"
+                    className="text-xs text-blue-600 hover:underline ml-2"
                     type="button"
                     onClick={() => setReplyTo(ci)}
                   >
@@ -139,13 +141,13 @@ export default function PostDetailPage() {
                 </div>
                 {/* Replies */}
                 {c.replies && c.replies.length > 0 && (
-                  <ul className="ml-6 mt-2 space-y-1 text-sm text-gray-700">
+                  <ul className="pl-4 mt-1 text-sm text-gray-600 border-l space-y-1">
                     {c.replies.map((r, ri) => (
-                      <li key={ri} className="pl-2 border-l">{r.text}</li>
+                      <li key={ri}>{r.text}</li>
                     ))}
                   </ul>
                 )}
-                {/* Reply form */}
+                {/* Reply form (inline) */}
                 {replyTo === ci && (
                   <ReplyForm
                     onSubmit={text => addReply(ci, text)}
@@ -157,9 +159,40 @@ export default function PostDetailPage() {
           </ul>
           <CommentForm onSubmit={addComment} />
         </div>
-        <button onClick={() => router.back()} className="text-blue-600 hover:underline mt-8 block">
+        <button
+          onClick={() => router.back()}
+          className="text-blue-600 hover:underline mt-6 text-sm mx-auto block"
+        >
           Back
         </button>
+        {/* OTHER THREADS */}
+        {otherPosts.length > 0 && (
+          <div className="mt-10">
+            <h5 className="font-semibold text-gray-600 mb-2 text-base">Other Threads</h5>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+              {otherPosts.slice(0, 4).map(p => (
+                <a
+                  key={p.id}
+                  href={`/forum/${p.id}`}
+                  className="flex flex-col bg-white rounded-lg shadow hover:bg-blue-50 transition px-3 py-2 border cursor-pointer"
+                >
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="font-semibold truncate">{p.title}</span>
+                    <span className="text-xs text-gray-500">${p.price}</span>
+                  </div>
+                  {p.image && (
+                    <img
+                      src={typeof p.image === "string" ? p.image : ""}
+                      alt={p.title}
+                      className="rounded h-20 w-full object-cover mt-1"
+                    />
+                  )}
+                  <span className="mt-1 text-xs text-blue-600">{p.community}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
@@ -169,7 +202,7 @@ function CommentForm({ onSubmit }: { onSubmit: (text: string) => void }) {
   const [text, setText] = useState("");
   return (
     <form
-      className="flex gap-2"
+      className="flex gap-2 mt-1"
       onSubmit={e => {
         e.preventDefault();
         if (text.trim()) {
@@ -183,11 +216,11 @@ function CommentForm({ onSubmit }: { onSubmit: (text: string) => void }) {
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Add a comment..."
-        className="rounded-full border px-3 py-1 flex-grow"
+        className="rounded-full border px-3 py-1 flex-grow text-sm"
       />
       <button
         type="submit"
-        className="rounded bg-blue-500 px-4 py-1 text-white font-medium hover:bg-blue-600"
+        className="rounded bg-blue-500 px-4 py-1.5 text-white font-medium hover:bg-blue-600 text-sm"
       >
         Send
       </button>
@@ -205,7 +238,7 @@ function ReplyForm({
   const [text, setText] = useState("");
   return (
     <form
-      className="flex gap-2 mt-2 ml-4"
+      className="flex gap-2 mt-2"
       onSubmit={e => {
         e.preventDefault();
         if (text.trim()) {
@@ -219,7 +252,7 @@ function ReplyForm({
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Reply..."
-        className="rounded-full border px-2 py-0.5 flex-grow"
+        className="rounded-full border px-2 py-0.5 flex-grow text-sm"
       />
       <button
         type="submit"
