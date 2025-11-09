@@ -1,9 +1,16 @@
-import AuthGate from "../components/AuthGate";
-import Image from "next/image";
+import { getCurrentUser } from "@/lib/auth";
+import SignInPage from "@/app/auth/signin/signIn";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
+  // If user is not authenticated, show sign-in screen (this is what users see first)
+  if (!user) {
+    return <SignInPage/>;
+  }
+
+  // If user is authenticated, show homepage
   return (
-    <AuthGate>
       <div className="min-h-screen bg-white">
         <main className="mx-auto w-full max-w-6xl px-6 pt-8 pb-20">
           {/* Page Title */}
@@ -13,6 +20,5 @@ export default function Home() {
           </section>
         </main>
       </div>
-    </AuthGate>
   );
 }

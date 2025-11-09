@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { validateEmailDomain } from '@/app/auth/email'
 import { useRouter } from 'next/navigation'
 import { signup, login } from './actions'
@@ -11,6 +12,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,32 +38,95 @@ export default function SignInPage() {
       }
 
       if (isSignUp) {
-        alert('Account created successfully! Please sign in.')
-        setIsSignUp(false)
+        setShowSuccess(true)
         setEmail('')
         setPassword('')
-      } else {
-        router.push('/forum')
-        router.refresh()
       }
+      // Login redirect is handled server-side in the action
     } catch (err: any) {
-      setError(err.message)
+      // Ignore redirect errors from Next.js (they're expected for server-side redirects)
+      if (
+        err?.digest?.startsWith('NEXT_REDIRECT') || 
+        err?.message?.includes('NEXT_REDIRECT') ||
+        err?.digest === 'NEXT_REDIRECT;replace;/'
+      ) {
+        // This is a redirect, not an actual error - let it happen
+        return
+      }
+      // Only show error if it's not a redirect
+      if (err?.message && !err.message.includes('NEXT_REDIRECT')) {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
   }
 
+  // Show success screen if account was created
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[url('/images/backgroundLogIn.png')] bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg w-full space-y-10 bg-white dark:bg-white rounded-lg shadow-lg p-8">
+          <div className="text-center">
+            <div className="mt-45 text-center flex justify-center">
+              <Image
+                src="/images/matcharoom_logo_v2.png"
+                alt="MatchARoom Logo"
+                width={120}
+                height={30}
+                className="object-contain -mt-50"
+              />
+            </div>
+            <h2 className="mt-2 text-center text-3xl font-extrabold text-[#548746] dark:text-[#548746]">
+              Account Created Successfully!
+            </h2>
+            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+              You have successfully created your account. Please sign in to continue.
+            </p>
+            <button
+              onClick={() => {
+                setShowSuccess(false)
+                setIsSignUp(false)
+                setEmail('')
+                setPassword('')
+              }}
+              className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#548746] hover:bg-[#3b6330] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#548746]"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-[url('/images/backgroundLogIn.png')] bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-10 bg-white dark:bg-white rounded-lg shadow-lg p-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {isSignUp ? 'Create your account' : 'Sign in to your account'}
-          </h2>
+          <div className="mt-40 text-center flex justify-center">
+            <Image
+              src="/images/matcharoom_logo_v2.png"
+              alt="MatchARoom Logo"
+              width={120}
+              height={30}
+              className="object-contain -mt-50"
+            />
+          </div>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             {isSignUp
-              ? 'Join MatchARoom - UB students only'
-              : 'Welcome back to MatchARoom'}
+              ? (
+                  <>
+                    Join <span className="font-bold text-[#548746]">MatchARoom</span> - UB students only,<br />
+                    To get started, please create an account
+                  </>
+                )
+              : (
+                  <>
+                    Welcome back to <span className="font-bold text-[#548746]">MatchARoom</span> - UB students only<br />
+                    To get started, please sign in
+                  </>
+                )}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -78,7 +143,10 @@ export default function SignInPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border 
+                border-gray-300 dark:border-gray-200 placeholder-white-500 dark:placeholder-gray-400 text-black 
+                dark:text-gray-500 rounded-t-md focus:outline-none focus:ring-[#548746] focus:border-[#548746] focus:z-10 
+                sm:text-sm bg-gray-50 dark:bg-white-700"
                 placeholder="Email address (@buffalo.edu)"
               />
             </div>
@@ -94,7 +162,9 @@ export default function SignInPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 
+                dark:border-gray-200 placeholder-gray-500 dark:placeholder-gray-400 text-gray-500 dark:text-gray-500 rounded-b-md 
+                focus:outline-none focus:ring-[#548746] focus:border-[#548746] focus:z-10 sm:text-sm bg-white dark:bg-gray-50"
                 placeholder="Password"
               />
             </div>
@@ -110,7 +180,9 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm 
+              font-medium rounded-md text-gray-100 bg-[#548746] hover:bg-[#3b6330] focus:outline-none focus:ring-2 
+              focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading
                 ? isSignUp
@@ -129,7 +201,7 @@ export default function SignInPage() {
                 setIsSignUp(!isSignUp)
                 setError(null)
               }}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500"
+              className="text-sm text-[#548746] dark:text-[#548746] hover:text-[#3b6330] cursor-pointer"
             >
               {isSignUp
                 ? 'Already have an account? Sign in'

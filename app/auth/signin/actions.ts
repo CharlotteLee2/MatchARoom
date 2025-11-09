@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { SignJWT } from 'jose'
 import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-change-in-production'
@@ -41,20 +43,8 @@ export async function signup(email: string, password: string) {
     })
     console.log('User created successfully:', { id: user.id, email: user.email })
 
-    // Create JWT token
-    const token = await new SignJWT({ userId: user.id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('30d')
-      .sign(secret)
-
-    // Set cookie
-    const cookieStore = await cookies()
-    cookieStore.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
+    // Don't set cookie on signup - user needs to sign in manually
+    // This allows them to see the success screen first
 
     return { success: true, user: { id: user.id, email: user.email } }
   } catch (error: any) {
@@ -109,11 +99,20 @@ export async function login(email: string, password: string) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
     })
 
-    return { success: true, user: { id: user.id, email: user.email } }
+    // Revalidate the home page to ensure the cookie is recognized
+    revalidatePath('/')
+    
+    // Redirect server-side to ensure cookie is available
+    redirect('/')
   } catch (error: any) {
+    // Re-throw redirect errors - they're not actual errors
+    if (error?.digest?.startsWith('NEXT_REDIRECT') || error?.message?.includes('NEXT_REDIRECT')) {
+      throw error
+    }
     console.error('Login error:', error)
     return { error: 'Failed to login' }
   }
