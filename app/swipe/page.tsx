@@ -11,21 +11,21 @@ const profiles = [
     name: "Alex Johnson",
     age: 27,
     description: "Looking for a quiet roommate who loves cooking.",
-    image: "",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
   },
   {
     id: "2",
     name: "Maria Lopez",
     age: 24,
     description: "Friendly and tidy — hoping to find a chill place downtown.",
-    image: "",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
   },
   {
     id: "3",
     name: "David Kim",
     age: 29,
     description: "Work from home designer, clean and responsible.",
-    image: "",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
   },
 ];
 
