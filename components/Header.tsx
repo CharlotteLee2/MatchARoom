@@ -43,7 +43,7 @@ export default function Header({ onToggleChat }: HeaderProps) {
   };
 
   return (
-  <header className="sticky top-0 z-50 w-full border-b shadow-md" style={{ backgroundColor: "#467f36" }}>
+  <header className="sticky top-0 z-50 w-full border-b shadow-md" style={{ backgroundColor: "#548746" }}>
       <div className="w-full pl-4 pr-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4 flex-1">
           <Link href="/" className="flex items-center gap-3">

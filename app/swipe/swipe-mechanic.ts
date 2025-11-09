@@ -4,10 +4,12 @@ export function createProfileCard(options: { title: string; age?: number; descri
     card.innerHTML = `
         <div class="overlay like">FAVORITE 💚</div>
         <div class="overlay nope">HELL NAH ❌</div> 
-        <img src="${options.image}" alt="${options.title}"draggable="false" style="user-select: none; -webkit-user-drag: none;" />        
-        <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
-        <p>${options.description}</p>
-        ${options.interestedIn ? `<p style="color: #666; font-size: 14px; margin: 5px 0;"><strong>🏠 Interested in:</strong> ${options.interestedIn}</p>` : ''}
+        <img src="${options.image}" alt="${options.title}" draggable="false" style="user-select: none; -webkit-user-drag: none;" />
+        <div class="card-content">
+            <h2>${options.title}${options.age ? `, ${options.age}` : ''}</h2>
+            <p>${options.description}</p>
+            ${options.interestedIn ? `<p class="interested-in"><strong>🏠 Interested in:</strong><br/>${options.interestedIn}</p>` : ''}
+        </div>
     `;
     return card;
 }
