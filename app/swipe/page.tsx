@@ -3,9 +3,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { createProfileStack } from "./card";
 
-export const metadata = {
-  title: "Swipe - MatchARoom",
-};
+// Page is a client component (contains pointer interactions). Metadata removed to keep this file client-only.
 
 const profiles = [
   {
