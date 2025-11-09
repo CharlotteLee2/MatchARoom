@@ -100,10 +100,20 @@ export default function SwipePage() {
           id="ProfileCard"
           className="relative w-full h-[450px] flex justify-center items-center"
         ></div>
-
-        <Link href="/" className="block mt-6 text-blue-600">
-          Back to Home
-        </Link>
+        <div className="flex gap-4 mt-6 justify-center">
+          <Link 
+            href="/" 
+            className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            Back to Home
+          </Link>
+          <Link 
+            href="/forum" 
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            Go to Forum
+          </Link>
+        </div>
       </div>
     </main>
   );
