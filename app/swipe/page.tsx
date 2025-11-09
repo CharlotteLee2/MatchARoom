@@ -173,6 +173,10 @@ export default function SwipePage() {
           💡 Click the buttons or use keyboard arrows to navigate
         </p>
       </div>
+=======
+        </div>
+      </PageTransition>
+>>>>>>> 0519fdde7fb517288b098a205c83e45fb7f2e145
     </main>
   );
 }
