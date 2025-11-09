@@ -18,7 +18,6 @@ export function SwipeMechanic() {
     const profile = Array.from(ProfileCard.querySelectorAll<HTMLElement>('.profile-card'));
     let currentIndex = 0;
 
-    // Hide all cards except the first one
     profile.forEach((card, index) => {
         if (index === 0) {
             card.style.display = 'block';
@@ -86,7 +85,6 @@ export function SwipeMechanic() {
             favoriteOverlay.style.opacity = '0';
             hellNahOverlay.style.opacity = '0';
 
-            // Check if swipe is significant enough
             if (Math.abs(moveX) > 150 || Math.abs(velocityX) > 0.5) {
                 const direction = moveX > 0 ? 1 : -1;
                 const endX = direction * (window.innerWidth + 200);
@@ -107,7 +105,11 @@ export function SwipeMechanic() {
                     if (nextProfileCard) {
                         nextProfileCard.style.display = 'block';
                         nextProfileCard.style.opacity = '0';
-                        nextProfileCard.style.transform = 'scale(0.8) translateY(50px)';
+                        nextProfileCard.style.transform = 'scale(0.95) translateY(20px)';
+                        nextProfileCard.style.transition = 'none';
+                        
+                        // Force reflow to ensure initial styles are applied
+                        void nextProfileCard.offsetHeight;
                         
                         // Animate in the next card
                         setTimeout(() => {
@@ -115,10 +117,30 @@ export function SwipeMechanic() {
                             nextProfileCard.style.opacity = '1';
                             nextProfileCard.style.transform = 'scale(1) translateY(0)';
                         }, 50);
+                    } else {
+                        // No more profiles - show message
+                        const noMoreMessage = document.createElement('div');
+                        noMoreMessage.className = 'no-more-profiles';
+                        noMoreMessage.innerHTML = `
+                            <div style="text-align: center; padding: 40px 20px;">
+                                <h3 style="font-size: 24px; font-weight: bold; color: #666; margin-bottom: 10px;">
+                                    No More Entries!
+                                </h3>
+                                <p style="font-size: 16px; color: #999;">
+                                    Come back again another time.
+                                </p>
+                            </div>
+                        `;
+                        noMoreMessage.style.opacity = '0';
+                        ProfileCard?.appendChild(noMoreMessage);
+                        
+                        setTimeout(() => {
+                            noMoreMessage.style.transition = 'opacity 0.5s ease-in';
+                            noMoreMessage.style.opacity = '1';
+                        }, 50);
                     }
                 }, 700);
             } else {
-                // Return card to original position
                 card.style.transition = 'transform 0.6s ease-out';
                 card.style.transform = '';
             }

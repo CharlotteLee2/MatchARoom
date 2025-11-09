@@ -14,7 +14,7 @@ type Room = {
 
 export default function Header({ onToggleChat }: HeaderProps) {
   const [liked, setLiked] = useState<Room[]>([]);
-  const [logoSrc, setLogoSrc] = useState<string>('/images/matcharoom_logo_v2.png');
+  const [logoSrc, setLogoSrc] = useState<string>('/images/matcharoom_logo_v3.png');
 
   useEffect(() => {
     try {
@@ -24,7 +24,7 @@ export default function Header({ onToggleChat }: HeaderProps) {
       setLiked([]);
     }
     // set a cache-busted logo source once on mount so updates to the file are picked up by the browser
-    setLogoSrc(`/images/matcharoom_logo_v2.png?v=${Date.now()}`);
+    setLogoSrc(`/images/matcharoom_logo_v3.png?v=${Date.now()}`);
   }, []);
 
   return (
