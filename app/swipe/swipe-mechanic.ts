@@ -3,7 +3,7 @@ export function createProfileCard(options: { title: string; age?: number; descri
     card.className = 'profile-card';
     card.innerHTML = `
         <div class="overlay like">FAVORITE 💚</div>
-        <div class="overlay nope">HELL NAH ❌</div>
+        <div class="overlay nope">HELL NAH ❌</div> draggable="false" style="user-select: none; -webkit-user-drag: none;" />
         <img src="${options.image}" alt="${options.title}" />
         <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
         <p>${options.description}</p>
