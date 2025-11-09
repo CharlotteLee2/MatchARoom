@@ -1,12 +1,15 @@
-export function createProfileCard(options: { title: string; age?: number; description: string; image: string }): HTMLElement {
+export function createProfileCard(options: { title: string; age?: number; description: string; interestedIn?: string; image: string }): HTMLElement {
     const card = document.createElement('div');
     card.className = 'profile-card';
     card.innerHTML = `
         <div class="overlay like">FAVORITE 💚</div>
-        <div class="overlay nope">HELL NAH ❌</div>
-        <img src="${options.image}" alt="${options.title}" />
-        <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
-        <p>${options.description}</p>
+        <div class="overlay nope">HELL NAH ❌</div> 
+        <img src="${options.image}" alt="${options.title}" draggable="false" style="user-select: none; -webkit-user-drag: none;" />
+        <div class="card-content">
+            <h2>${options.title}${options.age ? `, ${options.age}` : ''}</h2>
+            <p>${options.description}</p>
+            ${options.interestedIn ? `<p class="interested-in"><strong>🏠 Interested in:</strong><br/>${options.interestedIn}</p>` : ''}
+        </div>
     `;
     return card;
 }
@@ -92,10 +95,20 @@ export function SwipeMechanic() {
                 const rotateEnd = direction * 45;
 
                 card.style.transition = 'transform 0.9s cubic-bezier(0.23, 1, 0.32, 1)';
-                card.style.transform = `translate(${endX}px, ${endY}px) rotate(${rotateEnd}deg)`; 
-                
+                card.style.transform = `translate(${endX}px, ${endY}px) rotate(${rotateEnd}deg)`;
+
                 if (direction > 0) console.log('💚 Liked');
                 else console.log('❌ Nope');
+
+                // Save swiped profile ID to localStorage
+                const profileId = card.dataset.id;
+                if (profileId && typeof window !== 'undefined') {
+                    const swipedIds = JSON.parse(localStorage.getItem("swipedProfiles") || "[]");
+                    if (!swipedIds.includes(profileId)) {
+                        swipedIds.push(profileId);
+                        localStorage.setItem("swipedProfiles", JSON.stringify(swipedIds));
+                    }
+                }
 
                 setTimeout(() => {
                     card.style.display = 'none';

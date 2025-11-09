@@ -72,7 +72,7 @@ export default function PostDetailPage() {
   if (!post) return <div className="p-12 text-center text-[#A87C5F]">Post not found.</div>;
 
   return (
-    <main className="py-10 bg-[#F5EEE6] min-h-screen">
+    <main className="py-10 bg-white min-h-screen">
       <div className="mx-auto max-w-lg px-2">
         {/* POST CARD */}
         <div className="bg-white rounded-lg shadow px-4 py-3 mb-6 flex flex-col gap-3 border border-[#A87C5F]">
@@ -122,13 +122,13 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        <div className="bg-[#F5EEE6] rounded-lg shadow p-4 border border-[#A87C5F]">
+        <div className="bg-white rounded-lg shadow p-4 border border-[#A87C5F]">
           <h4 className="font-semibold text-[#356859] mb-3 text-base">Comments</h4>
           <ul className="mb-3 space-y-2 text-[15px]">
             {comments.map((c, ci) => (
               <li key={ci} className="border rounded px-2 py-1 bg-white flex flex-col gap-1 border-[#A87C5F]">
                 <div className="flex justify-between items-center">
-                  <span>{c.text}</span>
+                  <span className="text-black">{c.text}</span>
                   <button
                     className="text-xs text-[#356859] hover:underline ml-2"
                     type="button"
@@ -138,7 +138,7 @@ export default function PostDetailPage() {
                   </button>
                 </div>
                 {c.replies && c.replies.length > 0 && (
-                  <ul className="pl-4 mt-1 text-sm text-[#A87C5F] border-l border-[#C9B29B] space-y-1">
+                  <ul className="pl-4 mt-1 text-sm text-black border-l border-[#C9B29B] space-y-1">
                     {c.replies.map((r, ri) => (
                       <li key={ri}>{r.text}</li>
                     ))}

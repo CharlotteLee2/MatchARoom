@@ -7,6 +7,7 @@ export interface ProfileCardData {
     age?: number;
     description?: string;
     image?: string;
+    interestedIn?: string;
 }
 
 export function createProfileStack(c: HTMLElement, profiles: ProfileCardData[]) {
@@ -22,7 +23,9 @@ export function createProfileStack(c: HTMLElement, profiles: ProfileCardData[]) 
             title: profile.name ?? '',
             age: profile.age ?? undefined,
             description: profile.description ?? '',
+            interestedIn: profile.interestedIn ?? undefined,
             image: profile.image ?? ''
+
         })
     );
     
