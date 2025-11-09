@@ -64,6 +64,11 @@ export default function Sidebar() {
           <span className="font-medium" style={{ color: '#315328' }}>Explore</span>
         </Link>
 
+        <Link href="/swipe" className="flex items-center gap-3 hover:bg-gray-100 rounded px-2 py-2">
+          <img src="/images/swipe_icon.png" alt="swipe" className="w-6 h-6" />
+          <span className="font-medium" style={{ color: '#315328' }}>Swipe</span>
+        </Link>
+
         <div>
           <button
             onClick={() => setOpen((s) => !s)}
