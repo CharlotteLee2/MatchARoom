@@ -74,38 +74,72 @@ const profiles = [
 
 export default function SwipePage() {
   const c = useRef<HTMLDivElement | null>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    if (c.current) {
-      c.current.innerHTML = ""; 
-      createProfileStack(c.current, profiles);
+    if (c.current && typeof window !== "undefined" && !initialized.current) {
+      initialized.current = true;
+      c.current.innerHTML = "";
+
+      // Get swiped profile IDs from localStorage
+      const swipedIds = JSON.parse(localStorage.getItem("swipedProfiles") || "[]");
+
+      // Filter out already swiped profiles
+      const remainingProfiles = profiles.filter(p => !swipedIds.includes(p.id));
+
+      if (remainingProfiles.length === 0) {
+        // Show "No More Entries" message immediately if all profiles are swiped
+        const noMoreMessage = document.createElement('div');
+        noMoreMessage.className = 'no-more-profiles';
+        noMoreMessage.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px;">
+            <h3 style="font-size: 24px; font-weight: bold; color: #666; margin-bottom: 10px;">
+              No More Entries!
+            </h3>
+            <p style="font-size: 16px; color: #999;">
+              Come back again another time.
+            </p>
+          </div>
+        `;
+        c.current.appendChild(noMoreMessage);
+      } else {
+        createProfileStack(c.current, remainingProfiles);
+      }
     }
   }, []);
 
   return (
- <main className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-12 px-4">
-      <div className="mx-auto max-w-lg">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-black mb-3 bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
-            Swipe
-          </h1>
-          <p className="text-gray-600 text-lg font-medium mb-3">
-            Discover Your Perfect Roommate Match
-          </p>
-          
-          {/* Instruction Pills */}
-          <div className="flex items-center justify-center gap-3 text-sm">
-            <div className="flex items-center gap-1.5 bg-red-50 px-4 py-2 rounded-full border border-red-100">
-              <span className="text-2xl">👈</span>
-              <span className="font-semibold text-red-600">Pass</span>
-            </div>
-            <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
-            <div className="flex items-center gap-1.5 bg-green-50 px-4 py-2 rounded-full border border-green-100">
-              <span className="text-2xl">👉</span>
-              <span className="font-semibold text-green-600">Match</span>
-            </div>
-          </div>
+    <main className="pt-8 pb-20">
+      <div className="mx-auto max-w-md px-6 text-center text-gray-700">
+        {/* Page Title */}
+        <h1 className="text-4xl font-bold text-center mb-8" style={{ color: '#356859' }}>Swipe</h1>
+        <div className="mb-6 space-y-2">
+  <p className="text-gray-600">
+    Swipe left or right to explore roommate profiles!
+  </p>
+  <p className="text-sm text-gray-500">
+    <span className="font-semibold text-red-500">Swipe left</span> to pass •
+    <span className="font-semibold text-green-500"> Swipe right</span> to match
+  </p>
+</div>
+        <div
+          ref={c}
+          id="ProfileCard"
+          className="relative w-full h-[450px] flex justify-center items-center"
+        ></div>
+        <div className="flex gap-4 mt-6 justify-center">
+          <Link 
+            href="/" 
+            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            Back to Home
+          </Link>
+          <Link 
+            href="/forum" 
+            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
+          >
+            Go to Forum
+          </Link>
         </div>
 
         {/* Card Container with Enhanced Shadow */}

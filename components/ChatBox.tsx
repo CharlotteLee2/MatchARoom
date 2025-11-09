@@ -22,7 +22,7 @@ export default function ChatBox({ onClose }: { onClose?: () => void }) {
   if (!visible) return null;
 
   return (
-    <div className="fixed right-4 bottom-4 w-80 bg-white border z-50">
+    <div className="fixed bottom-4 w-80 bg-white border z-50" style={{ right: '1rem' }}>
       <div className="flex items-center justify-between px-3 py-2 bg-green-600 text-white">
         <div className="font-semibold">Chat</div>
         <div className="flex items-center gap-2">
