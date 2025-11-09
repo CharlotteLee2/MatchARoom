@@ -34,7 +34,7 @@ const profiles = [
     id: "4",
     name: "Ivan Lee",
     age: 21,
-    description: "Easy-going and loves to eat out. Looking for a person to share food adventures with!",
+    description: "Easy-going and loves to eat out. SHORT KINGS STAND UP!",
     interestedIn: "The Station",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan%20Lee",
   },
@@ -42,11 +42,34 @@ const profiles = [
     id: "5",
     name: "Jeff Zheng",
     age: 21,
-    description: "Avid gamer and just a jokester. Everyone laughs at my jokes!",
+    description: "Just a comedian. Everyone laughs at my jokes!",
     interestedIn: "Aspen Heights",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeff%20Zheng",
   },
-
+  {
+    id: "6",
+    name: "Charlotte Lee",
+    age: 19,
+    description: "What the hell! Someone just broke my freaking window!",
+    interestedIn: "Villas at Chesnut Ridge",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlotte%20Lee",
+  },
+  {
+    id: "7",
+    name: "Isabella Delgado",
+    age: 19,
+    description: "Got asked what I'm doing later... 6 7!",
+    interestedIn: "The Station",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella%20Delgado",
+  },
+  {
+    id: "8",
+    name: "Jedidiah Liaw",
+    age: 19,
+    description: "I'm just a goofy goober for real!",
+    interestedIn: "Villas at Chesnut Ridge",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jedidiah%20Liaw",
+  }
 ];
 
 export default function SwipePage() {
