@@ -11,9 +11,10 @@ export type RoomFormData = {
 type Props = {
   onCreate: (data: RoomFormData) => void;
   communities: string[];
+  onClose?: () => void;
 };
 
-export default function RoomListingForm({ onCreate, communities }: Props) {
+export default function RoomListingForm({ onCreate, communities, onClose }: Props) {
   const [form, setForm] = useState<RoomFormData>({
     title: "",
     price: "",
@@ -43,7 +44,8 @@ export default function RoomListingForm({ onCreate, communities }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 p-6 mx-auto my-8 max-w-lg rounded-2xl shadow-xl bg-[#F5EEE6] border-2 border-[#A87C5F]"
+      className="flex flex-col gap-4 p-6 mx-auto max-w-lg rounded-2xl shadow-xl bg-white border-2 border-[#A87C5F]"
+      onClick={(e) => e.stopPropagation()}
     >
       <label className="font-bold text-[#356859]">
         Title
@@ -95,12 +97,23 @@ export default function RoomListingForm({ onCreate, communities }: Props) {
         />
       </label>
       {previewUrl && <img src={previewUrl} alt="Preview" className="w-64 rounded-md border mx-auto my-4 border-[#A87C5F]" />}
-      <button
-        type="submit"
-        className="rounded-full bg-[#356859] px-8 py-3 text-white font-extrabold shadow-lg hover:bg-green-900"
-      >
-        Post
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          className="flex-1 rounded-full bg-[#356859] px-8 py-3 text-white font-extrabold shadow-lg hover:bg-green-900"
+        >
+          Post
+        </button>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-[#C9B29B] px-6 py-3 text-[#356859] font-extrabold shadow-lg hover:bg-[#A87C5F] hover:text-white"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

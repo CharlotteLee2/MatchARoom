@@ -47,9 +47,9 @@ export default function Header({ onToggleChat }: HeaderProps) {
             <img src="/images/chat_icon.png" alt="chat" className="w-5 h-5" />
           </button>
 
-          <Link href="/forum" aria-label="Go to forum" className="inline-flex items-center">
+          <Link href="/explore?create=1" aria-label="Create post" className="inline-flex items-center">
             <button className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20" aria-hidden>
-              <img src="/images/add_forum_icon.png" alt="forum" className="w-5 h-5" />
+              <img src="/images/add_forum_icon.png" alt="create post" className="w-5 h-5" />
             </button>
           </Link>
         </div>

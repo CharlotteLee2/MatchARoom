@@ -109,6 +109,23 @@ export default function ExplorePage() {
     }
   }, [searchParams]);
 
+  // Lock scroll when form is open
+  useEffect(() => {
+    if (showForm) {
+      // Get scrollbar width before hiding it
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    };
+  }, [showForm]);
+
   useEffect(() => {
     setPosts(FAKE_POSTS);
     setCommunities(FAKE_COMMUNITIES);
@@ -400,12 +417,6 @@ export default function ExplorePage() {
           onChange={e => setSearch(e.target.value)}
         />
 
-        {showForm &&
-          <RoomListingForm
-            onCreate={handleCreate}
-            communities={[...communities.filter(c => userCommunities.includes(c)), ...userCommunities.filter(c => !communities.includes(c))]}
-          />
-        }
         {filtered.length === 0 && (
           <div className="mb-8 text-center text-[#C9B29B]">No posts found.</div>
         )}
@@ -491,6 +502,23 @@ export default function ExplorePage() {
               className="absolute top-4 right-4 text-white text-3xl font-bold"
               aria-label="Close"
             >&times;</button>
+          </div>
+        )}
+
+        {/* Create Post Modal */}
+        {showForm && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto py-8"
+            style={{ backgroundColor: 'rgba(53, 104, 89, 0.3)' }}
+            onClick={() => setShowForm(false)}
+          >
+            <div className="w-full max-w-lg mx-4">
+              <RoomListingForm
+                onCreate={handleCreate}
+                onClose={() => setShowForm(false)}
+                communities={[...communities.filter(c => userCommunities.includes(c)), ...userCommunities.filter(c => !communities.includes(c))]}
+              />
+            </div>
           </div>
         )}
       </div>
