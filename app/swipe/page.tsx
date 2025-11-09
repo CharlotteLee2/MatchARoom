@@ -74,11 +74,37 @@ const profiles = [
 
 export default function SwipePage() {
   const c = useRef<HTMLDivElement | null>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    if (c.current) {
-      c.current.innerHTML = ""; 
-      createProfileStack(c.current, profiles);
+    if (c.current && typeof window !== "undefined" && !initialized.current) {
+      initialized.current = true;
+      c.current.innerHTML = "";
+
+      // Get swiped profile IDs from localStorage
+      const swipedIds = JSON.parse(localStorage.getItem("swipedProfiles") || "[]");
+
+      // Filter out already swiped profiles
+      const remainingProfiles = profiles.filter(p => !swipedIds.includes(p.id));
+
+      if (remainingProfiles.length === 0) {
+        // Show "No More Entries" message immediately if all profiles are swiped
+        const noMoreMessage = document.createElement('div');
+        noMoreMessage.className = 'no-more-profiles';
+        noMoreMessage.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px;">
+            <h3 style="font-size: 24px; font-weight: bold; color: #666; margin-bottom: 10px;">
+              No More Entries!
+            </h3>
+            <p style="font-size: 16px; color: #999;">
+              Come back again another time.
+            </p>
+          </div>
+        `;
+        c.current.appendChild(noMoreMessage);
+      } else {
+        createProfileStack(c.current, remainingProfiles);
+      }
     }
   }, []);
 
