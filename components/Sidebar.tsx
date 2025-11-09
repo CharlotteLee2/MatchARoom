@@ -17,6 +17,33 @@ export default function Sidebar() {
     }
   }, []);
 
+  // listen for updates from other parts of the app (ExploreList) when communities change
+  useEffect(() => {
+    function onChange(e: Event) {
+      try {
+        const detail = (e as CustomEvent).detail;
+        if (Array.isArray(detail)) setCommunities(detail as string[]);
+        else {
+          const raw = localStorage.getItem("communities");
+          if (raw) setCommunities(JSON.parse(raw));
+          else setCommunities([]);
+        }
+      } catch (err) {
+        // fallback to reading localStorage
+        try {
+          const raw = localStorage.getItem("communities");
+          if (raw) setCommunities(JSON.parse(raw));
+          else setCommunities([]);
+        } catch {
+          setCommunities([]);
+        }
+      }
+    }
+
+    window.addEventListener("communitiesChanged", onChange as EventListener);
+    return () => window.removeEventListener("communitiesChanged", onChange as EventListener);
+  }, []);
+
   function selectCommunity(c?: string) {
     if (c) localStorage.setItem("selectedCommunity", c);
     else localStorage.removeItem("selectedCommunity");
