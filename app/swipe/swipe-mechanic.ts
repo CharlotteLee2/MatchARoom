@@ -100,7 +100,7 @@ export function SwipeMechanic() {
                 else console.log('❌ Nope');
 
                 setTimeout(() => {
-                    card.remove();
+                    card.style.display = 'none';
                     currentIndex++;
 
                     const nextProfileCard = profile[currentIndex];
