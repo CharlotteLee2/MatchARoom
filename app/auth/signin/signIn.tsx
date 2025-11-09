@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { validateEmailDomain } from '@/app/auth/email'
 import { useRouter } from 'next/navigation'
 import { signup, login } from './actions'
@@ -41,7 +42,8 @@ export default function SignInPage() {
         setEmail('')
         setPassword('')
       } else {
-        router.push('/forum')
+        // Redirect to homepage after successful login
+        router.push('/')
         router.refresh()
       }
     } catch (err: any) {
@@ -52,16 +54,32 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-[url('/images/backgroundLogIn.png')] bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-10 bg-white dark:bg-white rounded-lg shadow-lg p-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {isSignUp ? 'Create your account' : 'Sign in to your account'}
-          </h2>
+          <div className="mt-40 text-center flex justify-center">
+            <Image
+              src="/images/matcharoom_logo_v2.png"
+              alt="MatchARoom Logo"
+              width={120}
+              height={30}
+              className="object-contain -mt-50"
+            />
+          </div>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             {isSignUp
-              ? 'Join MatchARoom - UB students only'
-              : 'Welcome back to MatchARoom'}
+              ? (
+                  <>
+                    Join MatchARoom - UB students only,<br />
+                    To get started, please create an account
+                  </>
+                )
+              : (
+                  <>
+                    Welcome back to MatchARoom - UB students only<br />
+                    To get started, please sign in
+                  </>
+                )}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -78,7 +96,10 @@ export default function SignInPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border 
+                border-gray-300 dark:border-gray-200 placeholder-white-500 dark:placeholder-gray-400 text-gray-900 
+                dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 
+                sm:text-sm bg-gray-50 dark:bg-white-700"
                 placeholder="Email address (@buffalo.edu)"
               />
             </div>
@@ -94,7 +115,9 @@ export default function SignInPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 
+                dark:border-gray-200 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-b-md 
+                focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-50"
                 placeholder="Password"
               />
             </div>
@@ -110,7 +133,9 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm 
+              font-medium rounded-md text-gray-100 bg-[#548746] hover:bg-[#3b6330] focus:outline-none focus:ring-2 
+              focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading
                 ? isSignUp
@@ -129,7 +154,7 @@ export default function SignInPage() {
                 setIsSignUp(!isSignUp)
                 setError(null)
               }}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500"
+              className="text-sm text-[#548746] dark:text-[#548746] hover:text-[#3b6330] cursor-pointer"
             >
               {isSignUp
                 ? 'Already have an account? Sign in'
