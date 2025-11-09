@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 
 export type RoomFormData = {
@@ -42,57 +43,64 @@ export default function RoomListingForm({ onCreate, communities }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 p-6 mx-auto my-8 max-w-lg rounded-2xl shadow-xl bg-white border-2 border-blue-200"
+      className="flex flex-col gap-4 p-6 mx-auto my-8 max-w-lg rounded-2xl shadow-xl bg-[#F5EEE6] border-2 border-[#A87C5F]"
     >
-      <label className="font-bold">Room Title
+      <label className="font-bold text-[#356859]">
+        Title
         <input
           name="title"
           type="text"
           value={form.title}
           onChange={handleChange}
-          placeholder="Room Title"
+          placeholder="Room title"
           required
-          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-blue-300"
+          className="mt-1 block w-full px-4 py-2 border rounded-full border-[#A87C5F] focus:ring-2 focus:ring-[#356859] bg-white text-[#356859]"
         />
       </label>
-      <label className="font-bold">Monthly Price
+      <label className="font-bold text-[#356859]">
+        Price&nbsp;($/month)
         <input
           name="price"
           type="text"
           value={form.price}
           onChange={handleChange}
-          placeholder="Monthly Price"
+          placeholder="Monthly price"
           required
-          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-blue-300"
+          className="mt-1 block w-full px-4 py-2 border rounded-full border-[#A87C5F] focus:ring-2 focus:ring-[#356859] bg-white text-[#356859]"
         />
       </label>
-      <label className="font-bold">Community
+      <label className="font-bold text-[#356859]">
+        Community
         <select
           name="community"
           value={form.community}
           onChange={handleChange}
           required
-          className="mt-1 block w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-green-300"
+          className="mt-1 block w-full px-4 py-2 border rounded-full border-[#A87C5F] focus:ring-2 focus:ring-[#5FB268] bg-white text-[#356859]"
         >
-          <option value="">Select a Community</option>
+          <option value="">Select a community</option>
           {communities.map(c => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </label>
-      <label className="font-bold">Room Photo
+      <label className="font-bold text-[#356859] flex flex-col">
+        Room Photo
         <input
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="mt-1"
+          className="mt-2 mb-1"
+          style={{ maxWidth: 240 }}
         />
       </label>
-      {previewUrl && <img src={previewUrl} alt="Preview" className="w-64 rounded-md border mx-auto my-4" />}
+      {previewUrl && <img src={previewUrl} alt="Preview" className="w-64 rounded-md border mx-auto my-4 border-[#A87C5F]" />}
       <button
         type="submit"
-        className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-8 py-3 text-white font-extrabold shadow-lg hover:from-blue-700 hover:to-blue-900"
-      >Create Listing</button>
+        className="rounded-full bg-[#356859] px-8 py-3 text-white font-extrabold shadow-lg hover:bg-green-900"
+      >
+        Post
+      </button>
     </form>
   );
 }
