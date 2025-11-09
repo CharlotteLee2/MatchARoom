@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import RoomListingForm, { RoomFormData } from "../../components/RoomListingForm";
 import { v4 as uuidv4 } from "uuid";
+import PageTransition from "../../components/PageTransition";
 
-type PostWithId = RoomFormData & { id: string };
+type PostWithId = RoomFormData & { id: string; createdAt: string; author?: string };
 
 const FAKE_COMMUNITIES = [
   "Looking For a Roommate",
@@ -29,35 +30,45 @@ const FAKE_POSTS: PostWithId[] = [
     price: "950",
     image: "https://www.thestationbuffalo.com/wp-content/uploads/2023/12/station-buffalo-amenities-4.jpg",
     community: "Station Residents",
-    id: "1a"
+    id: "1a",
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    author: "Alex Johnson"
   },
   {
     title: "Girls Apartment — Station, Private Bath",
     price: "960",
     image: "https://th.bing.com/th/id/OIP.vHCn7-CUiqBFKT5B4cQlwQHaE8?w=260&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
     community: "Station Residents",
-    id: "4d"
+    id: "4d",
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    author: "Sarah Martinez"
   },
   {
     title: "Roommate Needed for 2BR @ Auden",
     price: "825",
     image: "https://th.bing.com/th/id/OIP.6tV9GO7PoiSj2Pe-vo6vgAHaEc?w=310&h=185&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
     community: "Auden Buffalo",
-    id: "2b"
+    id: "2b",
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    author: "David Kim"
   },
   {
     title: "Sublet Needed @ Auden (Jan–May)",
     price: "830",
     image: "https://th.bing.com/th/id/OIP.uT4whbocU-LcVhNKPAwfhAHaEc?w=306&h=183&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
     community: "Auden Buffalo",
-    id: "5e"
+    id: "5e",
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    author: "Emma Wilson"
   },
   {
     title: "1 Room Available – Chestnut Place (Spring Sublet)",
     price: "900",
     image: "https://th.bing.com/th/id/OIP.OPVm3QTeOeb7bpToo6GXNwHaFj?w=210&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
     community: "Chestnut Place",
-    id: "3c"
+    id: "3c",
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    author: "Michael Chen"
   }
 ];
 
@@ -188,6 +199,34 @@ export default function ExplorePage() {
     return null;
   }
 
+  function formatTimeAgo(dateString: string): string {
+    // Default to November 9, 2024 if no date provided
+    let date: Date;
+    if (!dateString) {
+      date = new Date('2024-11-09');
+    } else {
+      date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        date = new Date('2024-11-09');
+      }
+    }
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMonths = Math.floor(diffDays / 30);
+
+    if (diffSecs < 60) return `${Math.max(0, diffSecs)}s ago`;
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 30) return `${diffDays}d ago`;
+    if (diffMonths < 12) return `${diffMonths} ${diffMonths === 1 ? 'month' : 'months'} ago`;
+    return date.toLocaleDateString();
+  }
+
   async function handleCreate(newPost: RoomFormData) {
     // Convert File to data URL if needed
     let imageUrl: string | null = null;
@@ -201,7 +240,13 @@ export default function ExplorePage() {
       imageUrl = newPost.image;
     }
 
-    const toAdd: PostWithId = { ...newPost, image: imageUrl, id: uuidv4() };
+    const toAdd: PostWithId = {
+      ...newPost,
+      image: imageUrl,
+      id: uuidv4(),
+      createdAt: new Date().toISOString(),
+      author: "Current User"
+    };
     setPosts(prev => [toAdd, ...prev]);
     setShowForm(false);
   }
@@ -281,10 +326,11 @@ export default function ExplorePage() {
 
   return (
     <main className="pt-8 pb-20 bg-white min-h-screen">
-      <div className="mx-auto max-w-4xl px-6 text-[#356859]">
+      <PageTransition>
+        <div className="mx-auto max-w-4xl px-6 text-[#356859]">
 
-        {/* Page Title */}
-        <h1 className="text-4xl font-bold text-center mb-8" style={{ color: '#356859' }}>Explore</h1>
+          {/* Page Title */}
+          <h1 className="text-4xl font-bold text-center mb-8" style={{ color: '#356859' }}>Explore</h1>
 
         {/* Join Community Banner */}
         {currentFilter && (
@@ -311,7 +357,7 @@ export default function ExplorePage() {
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setShowForm(true)}
-            className="rounded-full bg-[#356859] px-5 py-2 font-semibold text-white shadow hover:bg-green-900"
+            className="rounded-full bg-green-700 px-5 py-2 font-semibold text-white shadow hover:bg-green-800"
           >
             + Create Post
           </button>
@@ -328,7 +374,7 @@ export default function ExplorePage() {
             onClick={() => setSearch("")}
             className={`px-3 py-1 rounded-full border transition font-medium ${
               search === ""
-                ? "bg-[#356859] text-white border-[#A87C5F]"
+                ? "bg-green-700 text-white border-[#A87C5F]"
                 : "bg-[#F5EEE6] text-[#356859] border-[#A87C5F]"
             }`}
           >
@@ -340,7 +386,7 @@ export default function ExplorePage() {
               onClick={() => setSearch(comm)}
               className={`px-3 py-1 rounded-full border transition font-medium ${
                 search === comm
-                  ? "bg-[#356859] text-white border-[#A87C5F]"
+                  ? "bg-green-700 text-white border-[#A87C5F]"
                   : "bg-[#F5EEE6] text-[#356859] border-[#A87C5F]"
               }`}
             >
@@ -355,8 +401,8 @@ export default function ExplorePage() {
                 onClick={() => setShowUserCommunitiesDropdown(!showUserCommunitiesDropdown)}
                 className={`px-3 py-1 rounded-full border transition font-medium flex items-center gap-1 ${
                   search && allUserCreatedCommunities.includes(search)
-                    ? "bg-[#356859] text-white border-[#A87C5F]"
-                    : "border-[#A87C5F] bg-[#F5EEE6] text-[#356859] hover:bg-[#356859] hover:text-white"
+                    ? "bg-green-700 text-white border-[#A87C5F]"
+                    : "border-[#A87C5F] bg-[#F5EEE6] text-[#356859] hover:bg-green-700 hover:text-white"
                 }`}
               >
                 User Communities
@@ -381,7 +427,7 @@ export default function ExplorePage() {
                       }}
                       className={`block w-full text-left px-4 py-2 text-sm transition ${
                         search === comm
-                          ? "bg-[#356859] text-white font-semibold"
+                          ? "bg-green-700 text-white font-semibold"
                           : "text-[#356859] hover:bg-[#F5EEE6]"
                       }`}
                     >
@@ -429,11 +475,16 @@ export default function ExplorePage() {
         )}
 
         {showCommunityModal && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50"
+            style={{ backgroundColor: 'rgba(53, 104, 89, 0.3)' }}
+            onClick={() => setShowCommunityModal(false)}
+          >
             <form
               onSubmit={handleAddCommunity}
-              className="bg-[#F5EEE6] rounded shadow p-6 flex flex-col border border-[#A87C5F]"
+              className="bg-white rounded shadow p-6 flex flex-col border border-[#A87C5F]"
               style={{ minWidth: 280 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <label className="mb-2 font-semibold text-[#356859]">Community Name:</label>
               <input
@@ -475,6 +526,11 @@ export default function ExplorePage() {
             const postCommunityJoined = p.community ? userCommunities.includes(p.community) : false;
             return (
             <article key={p.id} className="rounded-md border border-[#A87C5F] bg-white p-4 relative">
+              <div className="flex items-center gap-2 mb-1 text-xs text-gray-500">
+                {p.author && <span>Posted by {p.author}</span>}
+                <span>•</span>
+                <span>{formatTimeAgo(p.createdAt)}</span>
+              </div>
               <Link
                 href={`/explore/${p.id}`}
                 className="text-lg font-medium text-[#356859] hover:underline"
@@ -570,7 +626,8 @@ export default function ExplorePage() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      </PageTransition>
     </main>
   );
 }

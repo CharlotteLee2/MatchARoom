@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { createProfileStack } from "./card";
+import PageTransition from "../../components/PageTransition";
 
 // Page is a client component (contains pointer interactions). Metadata removed to keep this file client-only.
 
@@ -110,16 +111,17 @@ export default function SwipePage() {
 
   return (
     <main className="pt-8 pb-20">
-      <div className="mx-auto max-w-md px-6 text-center text-gray-700">
-        {/* Page Title */}
-        <h1 className="text-4xl font-bold text-center mb-8" style={{ color: '#356859' }}>Swipe</h1>
+      <PageTransition>
+        <div className="mx-auto max-w-md px-6 text-center text-gray-700">
+          {/* Page Title */}
+          <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#548746' }}>Swipe</h1>
         <div className="mb-6 space-y-2">
   <p className="text-gray-600">
     Swipe left or right to explore roommate profiles!
   </p>
   <p className="text-sm text-gray-500">
-    <span className="font-semibold text-red-500">Swipe left</span> to pass •
-    <span className="font-semibold text-green-500"> Swipe right</span> to match
+    <span className="font-semibold text-[#a35653]">Swipe left</span> to pass
+    <span className="font-semibold text-[#438a4c]"> swipe right</span> to match
   </p>
 </div>
         <div
@@ -128,17 +130,11 @@ export default function SwipePage() {
           className="relative w-full h-[450px] flex justify-center items-center"
         ></div>
         <div className="flex gap-4 mt-6 justify-center">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             Back to Home
-          </Link>
-          <Link 
-            href="/forum" 
-            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
-          >
-            Go to Forum
           </Link>
         </div>
 
@@ -177,6 +173,10 @@ export default function SwipePage() {
           💡 Click the buttons or use keyboard arrows to navigate
         </p>
       </div>
+=======
+        </div>
+      </PageTransition>
+>>>>>>> 0519fdde7fb517288b098a205c83e45fb7f2e145
     </main>
   );
 }
