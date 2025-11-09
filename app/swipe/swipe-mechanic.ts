@@ -105,13 +105,14 @@ export function SwipeMechanic() {
                         nextProfileCard.style.display = 'block';
                         nextProfileCard.style.opacity = '0';
                         nextProfileCard.style.transform = 'scale(0.95) translateY(20px)';
-                        nextProfileCard.animate(
-                            [
-                                { transform: 'scale(0.95) translateY(20px)', opacity: '0.9' },
-                                { transform: 'scale(1) translateY(0)', opacity: '1' }
-                            ],
-                            { duration: 400, easing: 'ease-out', fill: 'forwards' }
-                        );
+                        nextProfileCard.style.transition = 'none';
+                        
+                        void nextProfileCard.offsetHeight;
+                        setTimeout(() => {
+                            nextProfileCard.style.transition = 'all 0.4s ease-out';
+                            nextProfileCard.style.opacity = '1';
+                            nextProfileCard.style.transform = 'scale(1) translateY(0)';
+                        }, 50);
                     } else {
                         const noMoreMessage = document.createElement('div');
                         noMoreMessage.className = 'no-more-profiles';
