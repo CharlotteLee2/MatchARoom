@@ -100,7 +100,7 @@ export default function SwipePage() {
           id="ProfileCard"
           className="relative w-full h-[450px] flex justify-center items-center"
         ></div>
-        <div className="flex gap-5 mt-6 justify-center">
+        <div className="flex gap-4 mt-6.5 justify-center">
           <Link 
             href="/" 
             className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
