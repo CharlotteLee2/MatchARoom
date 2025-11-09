@@ -127,20 +127,57 @@ export default function ExplorePage() {
   }, [showForm]);
 
   useEffect(() => {
-    setPosts(FAKE_POSTS);
-    setCommunities(FAKE_COMMUNITIES);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem("forumposts", JSON.stringify(FAKE_POSTS));
-      window.localStorage.setItem("communities", JSON.stringify(FAKE_COMMUNITIES));
+      // Load posts from localStorage, or use FAKE_POSTS as fallback
+      const storedPosts = window.localStorage.getItem("forumposts");
+      const storedCommunities = window.localStorage.getItem("communities");
+
+      let parsedPosts: PostWithId[] = [];
+      let parsedCommunities: string[] = [];
+
+      try {
+        if (storedPosts) {
+          parsedPosts = JSON.parse(storedPosts);
+        }
+      } catch (e) {
+        console.error("Error parsing posts:", e);
+      }
+
+      try {
+        if (storedCommunities) {
+          parsedCommunities = JSON.parse(storedCommunities);
+        }
+      } catch (e) {
+        console.error("Error parsing communities:", e);
+      }
+
+      // If parsed data is empty or invalid, use FAKE data
+      if (!parsedPosts || parsedPosts.length === 0) {
+        parsedPosts = FAKE_POSTS;
+        window.localStorage.setItem("forumposts", JSON.stringify(FAKE_POSTS));
+      }
+
+      if (!parsedCommunities || parsedCommunities.length === 0) {
+        parsedCommunities = FAKE_COMMUNITIES;
+        window.localStorage.setItem("communities", JSON.stringify(FAKE_COMMUNITIES));
+      }
+
+      setPosts(parsedPosts);
+      setCommunities(parsedCommunities);
     }
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && posts.length > 0) {
       window.localStorage.setItem("forumposts", JSON.stringify(posts));
+    }
+  }, [posts]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && communities.length > 0) {
       window.localStorage.setItem("communities", JSON.stringify(communities));
     }
-  }, [posts, communities]);
+  }, [communities]);
 
   function getImageUrl(image: File | string | null | undefined): string | null {
     if (!image) return null;
@@ -151,8 +188,20 @@ export default function ExplorePage() {
     return null;
   }
 
-  function handleCreate(newPost: RoomFormData) {
-    const toAdd: PostWithId = { ...newPost, id: uuidv4() };
+  async function handleCreate(newPost: RoomFormData) {
+    // Convert File to data URL if needed
+    let imageUrl: string | null = null;
+    if (newPost.image instanceof File) {
+      imageUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(newPost.image as File);
+      });
+    } else if (typeof newPost.image === 'string') {
+      imageUrl = newPost.image;
+    }
+
+    const toAdd: PostWithId = { ...newPost, image: imageUrl, id: uuidv4() };
     setPosts(prev => [toAdd, ...prev]);
     setShowForm(false);
   }
@@ -235,7 +284,7 @@ export default function ExplorePage() {
       <div className="mx-auto max-w-4xl px-6 text-[#356859]">
 
         {/* Page Title */}
-        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#356859' }}>Explore</h1>
+        <h1 className="text-4xl font-bold text-center mb-8" style={{ color: '#356859' }}>Explore</h1>
 
         {/* Join Community Banner */}
         {currentFilter && (
@@ -459,7 +508,7 @@ export default function ExplorePage() {
                   src={getImageUrl(p.image)!}
                   alt={p.title}
                   className="mt-2 w-full max-w-xs rounded cursor-pointer transition hover:scale-105 border border-[#A87C5F]"
-                  style={{ maxHeight: 128 }}
+                  style={{ maxHeight: 128, objectFit: 'cover' }}
                   onClick={e => {
                     e.preventDefault();
                     setModalImage(getImageUrl(p.image)!);

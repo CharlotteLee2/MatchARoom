@@ -22,9 +22,21 @@ export default function RoomListingForm({ onCreate, communities, onClose }: Prop
     community: "",
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showPhotoWarning, setShowPhotoWarning] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
+
+    // Validate price input - only allow integers
+    if (name === "price") {
+      // Allow empty string or integers only
+      if (value === "" || /^\d+$/.test(value)) {
+        setForm(prev => ({ ...prev, [name]: value }));
+      }
+      // If invalid, don't update the state (reject the input)
+      return;
+    }
+
     setForm(prev => ({ ...prev, [name]: value }));
   }
 
@@ -32,13 +44,22 @@ export default function RoomListingForm({ onCreate, communities, onClose }: Prop
     const file = e.target.files?.[0] || null;
     setForm(prev => ({ ...prev, image: file }));
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
+    if (file) setShowPhotoWarning(false);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Check if photo is uploaded
+    if (!form.image) {
+      setShowPhotoWarning(true);
+      return;
+    }
+
     onCreate(form);
     setForm({ title: "", price: "", image: null, community: "" });
     setPreviewUrl(null);
+    setShowPhotoWarning(false);
   }
 
   return (
@@ -87,7 +108,7 @@ export default function RoomListingForm({ onCreate, communities, onClose }: Prop
         </select>
       </label>
       <label className="font-bold text-[#356859] flex flex-col">
-        Room Photo
+        Room Photo *
         <input
           type="file"
           accept="image/*"
@@ -96,6 +117,11 @@ export default function RoomListingForm({ onCreate, communities, onClose }: Prop
           style={{ maxWidth: 240 }}
         />
       </label>
+      {showPhotoWarning && (
+        <div className="text-red-600 text-sm font-semibold bg-red-50 border border-red-300 rounded px-3 py-2">
+          ⚠️ Please upload a photo before posting
+        </div>
+      )}
       {previewUrl && <img src={previewUrl} alt="Preview" className="w-64 rounded-md border mx-auto my-4 border-[#A87C5F]" />}
       <div className="flex gap-3">
         <button

@@ -92,10 +92,20 @@ export function SwipeMechanic() {
                 const rotateEnd = direction * 45;
 
                 card.style.transition = 'transform 0.9s cubic-bezier(0.23, 1, 0.32, 1)';
-                card.style.transform = `translate(${endX}px, ${endY}px) rotate(${rotateEnd}deg)`; 
-                
+                card.style.transform = `translate(${endX}px, ${endY}px) rotate(${rotateEnd}deg)`;
+
                 if (direction > 0) console.log('💚 Liked');
                 else console.log('❌ Nope');
+
+                // Save swiped profile ID to localStorage
+                const profileId = card.dataset.id;
+                if (profileId && typeof window !== 'undefined') {
+                    const swipedIds = JSON.parse(localStorage.getItem("swipedProfiles") || "[]");
+                    if (!swipedIds.includes(profileId)) {
+                        swipedIds.push(profileId);
+                        localStorage.setItem("swipedProfiles", JSON.stringify(swipedIds));
+                    }
+                }
 
                 setTimeout(() => {
                     card.style.display = 'none';
