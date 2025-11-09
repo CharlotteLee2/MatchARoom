@@ -43,8 +43,15 @@ export default function SwipePage() {
     <main className="py-20">
       <div className="mx-auto max-w-md px-6 text-center text-gray-700">
         <h2 className="text-3xl font-semibold mb-4">Swipe</h2>
-        <p className="mb-6">Swipe left or right to explore roommate profiles! If you do not like what you see, you may swipe left to move on to the next profile. If he or she is the one for you, swipe right to enjoy a great time with your new roommate! </p>
-
+        <div className="mb-6 space-y-2">
+  <p className="text-gray-600">
+    Swipe left or right to explore roommate profiles!
+  </p>
+  <p className="text-sm text-gray-500">
+    <span className="font-semibold text-red-500">Swipe left</span> to pass • 
+    <span className="font-semibold text-green-500"> Swipe right</span> to match
+  </p>
+</div>
         <div
           ref={c}
           id="ProfileCard"
