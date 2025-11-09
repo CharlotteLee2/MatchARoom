@@ -7,7 +7,7 @@ export default async function Home() {
   // TEMPORARY: Bypass auth for testing while database is down
   // TODO: Re-enable when database is back up
   // const user = await getCurrentUser();
-  const user = { id: 1, email: "test@example.com" }; // Mock user for testing
+  const user = await getCurrentUser(); // Mock user for testing
 
   // If user is not authenticated, show sign-in screen (this is what users see first)
   if (!user) {
