@@ -54,6 +54,14 @@ export default function Header({ onToggleChat }: HeaderProps) {
         </div>
 
   <div className="flex items-center gap-4 justify-end">
+          <Link
+            href="/explore?create=1"
+            aria-label="Add Forums"
+            className="relative inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20 transition-colors"
+          >
+            <img src="/images/add_forum_icon.png" alt="add forum" className="w-5 h-5" />
+          </Link>
+
           <button
             onClick={() => onToggleChat && onToggleChat()}
             aria-label="Open Chat"
@@ -68,8 +76,6 @@ export default function Header({ onToggleChat }: HeaderProps) {
           >
             Logout
           </button>
-
-          {/* Interested button removed per request */}
         </div>
       </div>
     </header>
