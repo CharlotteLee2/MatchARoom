@@ -3,63 +3,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import RoomListingForm, { RoomFormData } from "../../components/RoomListingForm";
-import { v4 as uuidv4 } from "uuid";
+import { getListings, getSites } from "./actions";
 
 type PostWithId = RoomFormData & { id: string };
 
-const FAKE_COMMUNITIES = [
-  "Looking For a Roommate",
-  "Roommate Needed ASAP",
-  "Sublet/Lease Takeover",
-  "Girls Roommate Search",
-  "Guys Roommate Search",
-  "Buffalo Apartments Connect",
-  "Pets Welcome",
-  "Station Residents",
-  "Auden Buffalo",
-  "Chestnut Place",
-  "Chill Roommates",
-  "Move-In Help",
-  "Cheap Housing Deals"
-];
-
-const FAKE_POSTS: PostWithId[] = [
-  {
-    title: "1 Bedroom Open – Station (Fall)",
-    price: "950",
-    image: "https://www.thestationbuffalo.com/wp-content/uploads/2023/12/station-buffalo-amenities-4.jpg",
-    community: "Station Residents",
-    id: "1a"
-  },
-  {
-    title: "Girls Apartment — Station, Private Bath",
-    price: "960",
-    image: "https://th.bing.com/th/id/OIP.vHCn7-CUiqBFKT5B4cQlwQHaE8?w=260&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
-    community: "Station Residents",
-    id: "4d"
-  },
-  {
-    title: "Roommate Needed for 2BR @ Auden",
-    price: "825",
-    image: "https://th.bing.com/th/id/OIP.6tV9GO7PoiSj2Pe-vo6vgAHaEc?w=310&h=185&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
-    community: "Auden Buffalo",
-    id: "2b"
-  },
-  {
-    title: "Sublet Needed @ Auden (Jan–May)",
-    price: "830",
-    image: "https://th.bing.com/th/id/OIP.uT4whbocU-LcVhNKPAwfhAHaEc?w=306&h=183&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
-    community: "Auden Buffalo",
-    id: "5e"
-  },
-  {
-    title: "1 Room Available – Chestnut Place (Spring Sublet)",
-    price: "900",
-    image: "https://th.bing.com/th/id/OIP.OPVm3QTeOeb7bpToo6GXNwHaFj?w=210&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
-    community: "Chestnut Place",
-    id: "3c"
-  }
-];
 
 export default function ExplorePage() {
   const searchParams = useSearchParams();
@@ -126,58 +73,25 @@ export default function ExplorePage() {
     };
   }, [showForm]);
 
+  // Fetch data from database
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Load posts from localStorage, or use FAKE_POSTS as fallback
-      const storedPosts = window.localStorage.getItem("forumposts");
-      const storedCommunities = window.localStorage.getItem("communities");
-
-      let parsedPosts: PostWithId[] = [];
-      let parsedCommunities: string[] = [];
-
+    async function fetchData() {
       try {
-        if (storedPosts) {
-          parsedPosts = JSON.parse(storedPosts);
-        }
-      } catch (e) {
-        console.error("Error parsing posts:", e);
+        const [listingsData, sitesData] = await Promise.all([
+          getListings(),
+          getSites()
+        ]);
+        
+        setPosts(listingsData);
+        setCommunities(sitesData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-
-      try {
-        if (storedCommunities) {
-          parsedCommunities = JSON.parse(storedCommunities);
-        }
-      } catch (e) {
-        console.error("Error parsing communities:", e);
-      }
-
-      // If parsed data is empty or invalid, use FAKE data
-      if (!parsedPosts || parsedPosts.length === 0) {
-        parsedPosts = FAKE_POSTS;
-        window.localStorage.setItem("forumposts", JSON.stringify(FAKE_POSTS));
-      }
-
-      if (!parsedCommunities || parsedCommunities.length === 0) {
-        parsedCommunities = FAKE_COMMUNITIES;
-        window.localStorage.setItem("communities", JSON.stringify(FAKE_COMMUNITIES));
-      }
-
-      setPosts(parsedPosts);
-      setCommunities(parsedCommunities);
     }
+    
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && posts.length > 0) {
-      window.localStorage.setItem("forumposts", JSON.stringify(posts));
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && communities.length > 0) {
-      window.localStorage.setItem("communities", JSON.stringify(communities));
-    }
-  }, [communities]);
 
   function getImageUrl(image: File | string | null | undefined): string | null {
     if (!image) return null;
@@ -201,15 +115,25 @@ export default function ExplorePage() {
       imageUrl = newPost.image;
     }
 
-    const toAdd: PostWithId = { ...newPost, image: imageUrl, id: uuidv4() };
+    // Note: In a real implementation, you'd save to database here
+    // For now, we'll add it to the local state and refetch
+    const toAdd: PostWithId = { ...newPost, image: imageUrl, id: Date.now().toString() };
     setPosts(prev => [toAdd, ...prev]);
     setShowForm(false);
+    
+    // Refetch from database to get updated list
+    try {
+      const listingsData = await getListings();
+      setPosts(listingsData);
+    } catch (error) {
+      console.error("Error refetching data:", error);
+    }
   }
 
   function handleAddCommunity(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = newCommunity.trim();
-    if (trimmed && !FAKE_COMMUNITIES.includes(trimmed) && !allUserCreatedCommunities.includes(trimmed)) {
+    if (trimmed && !communities.includes(trimmed) && !allUserCreatedCommunities.includes(trimmed)) {
       // Add to user's joined communities
       const updatedUserCommunities = [...userCommunities, trimmed];
       setUserCommunities(updatedUserCommunities);
