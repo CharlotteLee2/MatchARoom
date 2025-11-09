@@ -12,6 +12,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,19 +38,66 @@ export default function SignInPage() {
       }
 
       if (isSignUp) {
-        alert('Account created successfully! Please sign in.')
-        setIsSignUp(false)
+        setShowSuccess(true)
         setEmail('')
         setPassword('')
-      } else {
-        // Redirect to homepage after successful login
-        window.location.href = '/'
       }
+      // Login redirect is handled server-side in the action
     } catch (err: any) {
-      setError(err.message)
+      // Ignore redirect errors from Next.js (they're expected for server-side redirects)
+      if (
+        err?.digest?.startsWith('NEXT_REDIRECT') || 
+        err?.message?.includes('NEXT_REDIRECT') ||
+        err?.digest === 'NEXT_REDIRECT;replace;/'
+      ) {
+        // This is a redirect, not an actual error - let it happen
+        return
+      }
+      // Only show error if it's not a redirect
+      if (err?.message && !err.message.includes('NEXT_REDIRECT')) {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show success screen if account was created
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[url('/images/backgroundLogIn.png')] bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg w-full space-y-10 bg-white dark:bg-white rounded-lg shadow-lg p-8">
+          <div className="text-center">
+            <div className="mt-45 text-center flex justify-center">
+              <Image
+                src="/images/matcharoom_logo_v2.png"
+                alt="MatchARoom Logo"
+                width={120}
+                height={30}
+                className="object-contain -mt-50"
+              />
+            </div>
+            <h2 className="mt-2 text-center text-3xl font-extrabold text-[#548746] dark:text-[#548746]">
+              Account Created Successfully!
+            </h2>
+            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+              You have successfully created your account. Please sign in to continue.
+            </p>
+            <button
+              onClick={() => {
+                setShowSuccess(false)
+                setIsSignUp(false)
+                setEmail('')
+                setPassword('')
+              }}
+              className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#548746] hover:bg-[#3b6330] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#548746]"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -69,13 +117,13 @@ export default function SignInPage() {
             {isSignUp
               ? (
                   <>
-                    Join MatchARoom - UB students only,<br />
+                    Join <span className="font-bold text-[#548746]">MatchARoom</span> - UB students only,<br />
                     To get started, please create an account
                   </>
                 )
               : (
                   <>
-                    Welcome back to MatchARoom - UB students only<br />
+                    Welcome back to <span className="font-bold text-[#548746]">MatchARoom</span> - UB students only<br />
                     To get started, please sign in
                   </>
                 )}

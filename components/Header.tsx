@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type HeaderProps = {
   onToggleChat?: () => void;
@@ -15,6 +16,7 @@ type Room = {
 export default function Header({ onToggleChat }: HeaderProps) {
   const [liked, setLiked] = useState<Room[]>([]);
   const [logoSrc, setLogoSrc] = useState<string>('/images/matcharoom_logo_v2.png');
+  const router = useRouter();
 
   useEffect(() => {
     try {
@@ -26,6 +28,19 @@ export default function Header({ onToggleChat }: HeaderProps) {
     // set a cache-busted logo source once on mount so updates to the file are picked up by the browser
     setLogoSrc(`/images/matcharoom_logo_v2.png?v=${Date.now()}`);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/auth/logout', { method: 'GET' });
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect even if fetch fails
+      router.push('/');
+      router.refresh();
+    }
+  };
 
   return (
     <header className="w-full border-b" style={{ backgroundColor: "#467f36" }}>
@@ -56,6 +71,13 @@ export default function Header({ onToggleChat }: HeaderProps) {
             className="relative inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20"
           >
             <img src="/images/chat_icon.png" alt="chat" className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1 rounded-full bg-white/10 text-white text-sm hover:bg-white/20 transition-colors"
+          >
+            Logout
           </button>
 
           {/* Interested button removed per request */}
