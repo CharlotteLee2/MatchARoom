@@ -39,13 +39,15 @@ export default function Header({ onToggleChat }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/forum" className="text-white hover:underline flex items-center gap-2">
-            <img src="/images/add_forum_icon.png" alt="add forum" className="w-6 h-6" />
-            <span className="hidden sm:inline"></span>
-          </Link>
-
-          <Link href="/swipe" className="text-white hover:underline flex items-center gap-2">
-            <span className="hidden sm:inline">Swipe</span>
+          <Link href="/interested" className="relative">
+            <button className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+              Interested
+            </button>
+            {liked.length > 0 && (
+              <span className="absolute -right-2 -top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                {liked.length}
+              </span>
+            )}
           </Link>
 
           <button

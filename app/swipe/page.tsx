@@ -1,9 +1,15 @@
-"use client";
+
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { createProfileStack } from "./card";
 
+<<<<<<< HEAD
 // Page is a client component (contains pointer interactions). Metadata removed to keep this file client-only.
+=======
+export const pageMetadata = {
+  title: "Swipe - MatchARoom",
+};
+>>>>>>> 2da8caff6a9d02dc17f09a7b4b14fbe05757dc0c
 
 const profiles = [
   {
@@ -59,3 +65,4 @@ export default function SwipePage() {
   );
 }
 
+ 
