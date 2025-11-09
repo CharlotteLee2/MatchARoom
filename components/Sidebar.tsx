@@ -83,8 +83,12 @@ export default function Sidebar() {
             </span>
           </button>
 
-          {userCommunitiesOpen && (
-            <div className="mt-2 pl-3 flex flex-col gap-2">
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              userCommunitiesOpen ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="pl-3 flex flex-col gap-2">
               {userCommunities.length === 0 ? (
                 <span className="text-xs text-gray-500">No communities yet</span>
               ) : (
@@ -100,7 +104,7 @@ export default function Sidebar() {
                 ))
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </aside>
