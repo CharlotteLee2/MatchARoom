@@ -26,44 +26,51 @@ const FAKE_POSTS: PostWithId[] = [
   {
     title: "1 Bedroom Open – Station (Fall)",
     price: "950",
-    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=400&q=80",
-    community: "Looking For a Roommate",
+    image: "https://www.thestationbuffalo.com/wp-content/uploads/2023/12/station-buffalo-amenities-4.jpg",
+    community: "Station Residents",
     id: "1a"
-  },
-  {
-    title: "Roommate Needed for 2BR @ Auden",
-    price: "825",
-    image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80",
-    community: "Roommate Needed ASAP",
-    id: "2b"
-  },
-  {
-    title: "1 Room Available – Chestnut Place (Spring Sublet)",
-    price: "900",
-    image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80",
-    community: "Sublet/Lease Takeover",
-    id: "3c"
   },
   {
     title: "Girls Apartment — Station, Private Bath",
     price: "960",
-    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-    community: "Girls Roommate Search",
+    image: "https://th.bing.com/th/id/OIP.vHCn7-CUiqBFKT5B4cQlwQHaE8?w=260&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Station Residents",
     id: "4d"
+  },
+  {
+    title: "Roommate Needed for 2BR @ Auden",
+    price: "825",
+    image: "https://th.bing.com/th/id/OIP.6tV9GO7PoiSj2Pe-vo6vgAHaEc?w=310&h=185&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Auden Buffalo",
+    id: "2b"
   },
   {
     title: "Sublet Needed @ Auden (Jan–May)",
     price: "830",
-    image: "https://images.unsplash.com/photo-1482062364825-616fd23b8fc1?auto=format&fit=crop&w=400&q=80",
-    community: "Sublet/Lease Takeover",
+    image: "https://th.bing.com/th/id/OIP.uT4whbocU-LcVhNKPAwfhAHaEc?w=306&h=183&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Auden Buffalo",
     id: "5e"
+  },
+  {
+    title: "1 Room Available – Chestnut Place (Spring Sublet)",
+    price: "900",
+    image: "https://th.bing.com/th/id/OIP.OPVm3QTeOeb7bpToo6GXNwHaFj?w=210&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Chestnut Place",
+    id: "3c"
   },
   {
     title: "3 Bedroom – Chestnut, All Genders Welcome",
     price: "860",
-    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-    community: "Buffalo Apartments Connect",
+    image: "https://th.bing.com/th/id/OIP.vNGsYCp1tPs7Zt96yDM0KQHaFj?w=211&h=181&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Chestnut Place",
     id: "6f"
+  },
+  {
+    title: "Private Bedroom – Chestnut Place, Summer Lease",
+    price: "910",
+    image: "https://th.bing.com/th/id/OIP.OPVm3QTeOeb7bpToo6GXNwHaFj?w=210&h=180&c=7&r=0&o=7&cb=ucfimgc2&dpr=1.3&pid=1.7&rm=3",
+    community: "Chestnut Place",
+    id: "7g"
   }
 ];
 
@@ -76,7 +83,6 @@ export default function ForumPage() {
   const [communities, setCommunities] = useState<string[]>([]);
   const [modalImage, setModalImage] = useState<string | null>(null);
 
-  // Always reset to fake demo data on every reload
   useEffect(() => {
     setPosts(FAKE_POSTS);
     setCommunities(FAKE_COMMUNITIES);
@@ -117,17 +123,36 @@ export default function ForumPage() {
     }
   }
 
-  const filtered = posts.filter(
-    p =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.price.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = search && communities.includes(search)
+    ? posts.filter(p => p.community === search)
+    : posts.filter(
+        p =>
+          p.title.toLowerCase().includes(search.toLowerCase()) ||
+          p.price.toLowerCase().includes(search.toLowerCase())
+      );
 
   return (
     <main className="py-20">
       <div className="mx-auto max-w-4xl px-6 text-gray-600">
 
-        {/* BUTTONS TOGETHER */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => setSearch("")}
+            className={`px-3 py-1 rounded-full border ${search === "" ? "bg-blue-600 text-white" : "bg-white text-blue-800 border-blue-200"} transition font-medium`}
+          >
+            All
+          </button>
+          {communities.map(comm => (
+            <button
+              key={comm}
+              onClick={() => setSearch(comm)}
+              className={`px-3 py-1 rounded-full border ${search === comm ? "bg-blue-600 text-white" : "bg-white text-blue-800 border-blue-200"} transition font-medium`}
+            >
+              {comm}
+            </button>
+          ))}
+        </div>
+
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-2xl font-semibold">Community Forum</h2>
           <div className="flex gap-4">
@@ -145,7 +170,7 @@ export default function ForumPage() {
             </button>
           </div>
         </div>
-        {/* COMMUNITY MODAL */}
+
         {showCommunityModal && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
             <form
@@ -180,9 +205,10 @@ export default function ForumPage() {
           type="text"
           placeholder="Search room titles or prices..."
           className="flex-grow rounded-full border px-4 py-2 shadow-sm focus:outline-none mr-4 w-full mb-8"
-          value={search}
+          value={search && !communities.includes(search) ? search : ""}
           onChange={e => setSearch(e.target.value)}
         />
+
         {showForm &&
           <RoomListingForm
             onCreate={handleCreate}
@@ -222,7 +248,6 @@ export default function ForumPage() {
             </article>
           ))}
         </div>
-        {/* MODAL for fullscreen image */}
         {modalImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"

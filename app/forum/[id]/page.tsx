@@ -43,7 +43,6 @@ export default function PostDetailPage() {
     window.localStorage.setItem("forumcomments_" + id, JSON.stringify(comments));
   }, [comments, id]);
 
-  // Like logic per post
   const [liked, setLiked] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined" || !id) return;
@@ -75,7 +74,6 @@ export default function PostDetailPage() {
   return (
     <main className="py-10 bg-gray-50 min-h-screen">
       <div className="mx-auto max-w-lg px-2">
-        {/* POST CARD */}
         <div className="bg-white rounded-lg shadow px-4 py-3 mb-6 flex flex-col gap-3">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold truncate">{post.title}</h2>
@@ -103,7 +101,6 @@ export default function PostDetailPage() {
             />
           )}
         </div>
-        {/* MODAL for fullscreen image */}
         {modalImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
@@ -138,7 +135,6 @@ export default function PostDetailPage() {
                     Reply
                   </button>
                 </div>
-                {/* Replies */}
                 {c.replies && c.replies.length > 0 && (
                   <ul className="pl-4 mt-1 text-sm text-gray-600 border-l space-y-1">
                     {c.replies.map((r, ri) => (
@@ -146,7 +142,6 @@ export default function PostDetailPage() {
                     ))}
                   </ul>
                 )}
-                {/* Reply form (inline) */}
                 {replyTo === ci && (
                   <ReplyForm
                     onSubmit={text => addReply(ci, text)}
@@ -164,7 +159,6 @@ export default function PostDetailPage() {
         >
           Back
         </button>
-        {/* OTHER THREADS */}
         {otherPosts.length > 0 && (
           <div className="mt-10">
             <h5 className="font-semibold text-gray-600 mb-2 text-base">Other Threads</h5>
