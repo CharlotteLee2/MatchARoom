@@ -2,8 +2,8 @@ export function createProfileCard(options: { title: string; age?: number; descri
     const card = document.createElement('div');
     card.className = 'profile-card';
     card.innerHTML = `
-        <div class="overlay like">FAVORITE 💚</div>
-        <div class="overlay nope">HELL NAH ❌</div>
+        <div class="overlay like" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; color: #4ade80; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;">FAVORITE 💚</div>
+        <div class="overlay nope" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; color: #ef4444; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;">HELL NAH ❌</div>
         <img src="${options.image}" alt="${options.title}" />
         <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
         <p>${options.description}</p>
@@ -84,6 +84,7 @@ export function SwipeMechanic() {
 
             favoriteOverlay.style.opacity = '0';
             hellNahOverlay.style.opacity = '0';
+
             if (Math.abs(moveX) > 150 || Math.abs(velocityX) > 0.5) {
                 const direction = moveX > 0 ? 1 : -1;
                 const endX = direction * (window.innerWidth + 200);
@@ -107,13 +108,17 @@ export function SwipeMechanic() {
                         nextProfileCard.style.transform = 'scale(0.95) translateY(20px)';
                         nextProfileCard.style.transition = 'none';
                         
+                        // Force reflow to ensure initial styles are applied
                         void nextProfileCard.offsetHeight;
+                        
+                        // Animate in the next card
                         setTimeout(() => {
                             nextProfileCard.style.transition = 'all 0.4s ease-out';
                             nextProfileCard.style.opacity = '1';
                             nextProfileCard.style.transform = 'scale(1) translateY(0)';
                         }, 50);
                     } else {
+                        // No more profiles - show message
                         const noMoreMessage = document.createElement('div');
                         noMoreMessage.className = 'no-more-profiles';
                         noMoreMessage.innerHTML = `
@@ -129,7 +134,6 @@ export function SwipeMechanic() {
                         noMoreMessage.style.opacity = '0';
                         ProfileCard?.appendChild(noMoreMessage);
                         
-
                         setTimeout(() => {
                             noMoreMessage.style.transition = 'opacity 0.5s ease-in';
                             noMoreMessage.style.opacity = '1';
@@ -137,7 +141,6 @@ export function SwipeMechanic() {
                     }
                 }, 700);
             } else {
- 
                 card.style.transition = 'transform 0.6s ease-out';
                 card.style.transform = '';
             }
