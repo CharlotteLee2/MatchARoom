@@ -1,19 +1,34 @@
-import Link from "next/link";
-
-export const metadata = {
-  title: "Forum - MatchARoom",
-};
+"use client";
+import RoomListingForm, { RoomFormData } from "../../components/RoomListingForm";
+import { useRouter } from "next/navigation";
 
 export default function ForumPage() {
+  const router = useRouter();
+
+  function handleCreate(data: RoomFormData) {
+    router.push("/explore");
+  }
+
   return (
-    <main className="py-20">
-      <div className="mx-auto max-w-4xl px-6 text-center text-gray-600">
-        <h2 className="text-2xl font-semibold mb-3">Forum (Coming Soon)</h2>
-        <p className="mb-6">This page is reserved for the community forum. The team is working on it.</p>
-        <Link href="/" className="text-blue-600">
-          Back to Home
-        </Link>
-      </div>
+    <main className="min-h-screen bg-[#F5EEE6] py-14 flex flex-col items-center">
+      <h1 className="text-2xl font-bold text-[#356859] mb-4">Create a Post</h1>
+      <RoomListingForm
+        onCreate={handleCreate}
+        communities={[
+          "Looking For a Roommate",
+          "Station Residents",
+          "Auden Buffalo",
+          "Chestnut Place",
+          "Move-In Help",
+          "Cheap Housing Deals"
+        ]}
+      />
+      <button
+        onClick={() => router.push("/explore")}
+        className="mt-6 px-6 py-2 rounded-full bg-[#A87C5F] text-white font-semibold shadow hover:bg-[#6D4E2E]"
+      >
+        Back to Explore
+      </button>
     </main>
   );
 }
