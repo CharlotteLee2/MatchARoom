@@ -9,24 +9,44 @@ const profiles = [
   {
     id: "1",
     name: "Alex Johnson",
-    age: 27,
+    age: 18,
     description: "Looking for a quiet roommate who loves cooking.",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+    interestedIn: "Villas at Chesnut Ridge, The Station, Aspen Heights",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex%20Johnson",
   },
   {
     id: "2",
     name: "Maria Lopez",
-    age: 24,
+    age: 21,
     description: "Friendly and tidy — hoping to find a chill place downtown.",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+    interestedIn: "The Station, Aspen Heights",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria%20Lopez",
   },
   {
     id: "3",
     name: "David Kim",
-    age: 29,
+    age: 19,
     description: "Work from home designer, clean and responsible.",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+    interestedIn: "Villas at Chesnut Ridge", 
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=David%20Kim",
   },
+  {
+    id: "4",
+    name: "Ivan Lee",
+    age: 21,
+    description: "Easy-going and loves to eat out. Looking for a person to share food adventures with!",
+    interestedIn: "The Station",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan%20Lee",
+  },
+  {
+    id: "5",
+    name: "Jeff Zheng",
+    age: 21,
+    description: "Avid gamer and just a jokester. Everyone laughs at my jokes!",
+    interestedIn: "Aspen Heights",
+    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeff%20Zheng",
+  },
+
 ];
 
 export default function SwipePage() {

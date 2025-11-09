@@ -1,12 +1,13 @@
-export function createProfileCard(options: { title: string; age?: number; description: string; image: string }): HTMLElement {
+export function createProfileCard(options: { title: string; age?: number; description: string; interestedIn?: string; image: string }): HTMLElement {
     const card = document.createElement('div');
     card.className = 'profile-card';
     card.innerHTML = `
         <div class="overlay like">FAVORITE 💚</div>
         <div class="overlay nope">HELL NAH ❌</div> 
-        <img src="${options.image}" alt="${options.title}" draggable="false" style="user-select: none; -webkit-user-drag: none;" />        
+        <img src="${options.image}" alt="${options.title}"draggable="false" style="user-select: none; -webkit-user-drag: none;" />        
         <h2>${options.title} ${options.age ? `(${options.age})` : ''}</h2>
         <p>${options.description}</p>
+        ${options.interestedIn ? `<p style="color: #666; font-size: 14px; margin: 5px 0;"><strong>🏠 Interested in:</strong> ${options.interestedIn}</p>` : ''}
     `;
     return card;
 }
