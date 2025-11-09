@@ -11,7 +11,7 @@ const profiles = [
     name: "Alex Johnson",
     age: 27,
     description: "Looking for a quiet roommate who loves cooking.",
-    image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.tiktok.com%2Fdiscover%2Fkirk-speed&psig=AOvVaw0CVW0HqVADYPjtgecJscvl&ust=1762752098726000&source=images&cd=vfe&opi=89978449&ved=0CBYQjRxqFwoTCJD2vbep5JADFQAAAAAdAAAAABAE",
+    image: "",
   },
   {
     id: "2",
