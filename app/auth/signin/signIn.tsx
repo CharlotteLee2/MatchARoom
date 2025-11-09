@@ -70,7 +70,7 @@ export default function SignInPage() {
           <div className="text-center">
             <div className="mt-45 text-center flex justify-center">
               <Image
-                src="/images/matcharoom_logo_v2.png"
+                src="/images/matcharoom_logo_v3.png"
                 alt="MatchARoom Logo"
                 width={120}
                 height={30}
@@ -106,7 +106,7 @@ export default function SignInPage() {
         <div>
           <div className="mt-40 text-center flex justify-center">
             <Image
-              src="/images/matcharoom_logo_v2.png"
+              src="/images/matcharoom_logo_v3.png"
               alt="MatchARoom Logo"
               width={120}
               height={30}
