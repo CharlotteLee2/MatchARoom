@@ -103,13 +103,13 @@ export default function SwipePage() {
         <div className="flex gap-4 mt-6 justify-center">
           <Link 
             href="/" 
-            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             Back to Home
           </Link>
           <Link 
             href="/forum" 
-            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             Go to Forum
           </Link>
