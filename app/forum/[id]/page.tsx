@@ -19,11 +19,10 @@ function getImageUrl(image: File | string | null | undefined): string | null {
 export default function PostDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [post, setPost] = useState<(RoomFormData & { id: string }) | null>(null);
+  const [post, setPost] = useState<PostWithId | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyTo, setReplyTo] = useState<number | null>(null);
   const [modalImage, setModalImage] = useState<string | null>(null);
-  const [otherPosts, setOtherPosts] = useState<PostWithId[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -32,7 +31,6 @@ export default function PostDetailPage() {
       const arr = JSON.parse(stored);
       const found = arr.find((p: any) => p.id === id);
       setPost(found ?? null);
-      setOtherPosts(arr.filter((p: any) => p.id !== id));
     }
     const cs = window.localStorage.getItem("forumcomments_" + id);
     if (cs) setComments(JSON.parse(cs));
@@ -43,6 +41,7 @@ export default function PostDetailPage() {
     window.localStorage.setItem("forumcomments_" + id, JSON.stringify(comments));
   }, [comments, id]);
 
+  // Like logic per post
   const [liked, setLiked] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined" || !id) return;
@@ -71,9 +70,21 @@ export default function PostDetailPage() {
 
   if (!post) return <div className="p-12 text-center">Post not found.</div>;
 
+  // Suggest other threads (optional and compact)
+  const [otherPosts, setOtherPosts] = useState<PostWithId[]>([]);
+  useEffect(() => {
+    if (!id || typeof window === "undefined") return;
+    const stored = window.localStorage.getItem("forumposts");
+    if (stored) {
+      const arr = JSON.parse(stored);
+      setOtherPosts(arr.filter((p: any) => p.id !== id));
+    }
+  }, [id]);
+
   return (
     <main className="py-10 bg-gray-50 min-h-screen">
       <div className="mx-auto max-w-lg px-2">
+        {/* POST CARD */}
         <div className="bg-white rounded-lg shadow px-4 py-3 mb-6 flex flex-col gap-3">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold truncate">{post.title}</h2>
@@ -101,6 +112,7 @@ export default function PostDetailPage() {
             />
           )}
         </div>
+        {/* MODAL for fullscreen image */}
         {modalImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
@@ -120,6 +132,8 @@ export default function PostDetailPage() {
             >&times;</button>
           </div>
         )}
+
+        {/* COMMENT THREAD */}
         <div className="bg-white rounded-lg shadow p-4">
           <h4 className="font-semibold text-gray-700 mb-3 text-base">Comments</h4>
           <ul className="mb-3 space-y-2 text-[15px]">
@@ -135,6 +149,7 @@ export default function PostDetailPage() {
                     Reply
                   </button>
                 </div>
+                {/* Replies */}
                 {c.replies && c.replies.length > 0 && (
                   <ul className="pl-4 mt-1 text-sm text-gray-600 border-l space-y-1">
                     {c.replies.map((r, ri) => (
@@ -142,6 +157,7 @@ export default function PostDetailPage() {
                     ))}
                   </ul>
                 )}
+                {/* Reply form (inline) */}
                 {replyTo === ci && (
                   <ReplyForm
                     onSubmit={text => addReply(ci, text)}
@@ -159,6 +175,7 @@ export default function PostDetailPage() {
         >
           Back
         </button>
+        {/* OTHER THREADS BELOW */}
         {otherPosts.length > 0 && (
           <div className="mt-10">
             <h5 className="font-semibold text-gray-600 mb-2 text-base">Other Threads</h5>
