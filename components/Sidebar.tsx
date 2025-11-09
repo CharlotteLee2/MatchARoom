@@ -44,7 +44,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-  <aside className="w-56 border-r p-3 hidden lg:block lg:fixed lg:top-14 lg:left-0 lg:z-40 lg:shadow-sm lg:h-[calc(100vh-3.5rem)] lg:overflow-auto">
+  <aside className="w-64 border-r p-3 hidden lg:block lg:fixed lg:top-14 lg:left-0 lg:z-40 lg:shadow-sm lg:h-[calc(100vh-3.5rem)] lg:overflow-auto">
       <div className="flex flex-col gap-3">
         <Link href="/" className="flex items-center gap-3 hover:bg-gray-100 rounded px-2 py-2">
           <img src="/images/home_logo.png" alt="home" className="w-6 h-6" />

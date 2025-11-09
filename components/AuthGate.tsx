@@ -4,9 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
-  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+  // TEMPORARY: Bypass auth for testing while database is down
+  // TODO: Re-enable auth check when database is back up
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(true);
 
   useEffect(() => {
+    // Auth check temporarily disabled for testing
+    // Uncomment below when database is ready:
+    /*
     try {
       // Simple localStorage-based mock auth check for frontend prototype.
       // The app should replace this with real auth (cookie, JWT, session) later.
@@ -15,6 +20,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     } catch (e) {
       setLoggedIn(false);
     }
+    */
   }, []);
 
   if (loggedIn === null) {
