@@ -43,8 +43,7 @@ export default function SignInPage() {
         setPassword('')
       } else {
         // Redirect to homepage after successful login
-        router.push('/')
-        router.refresh()
+        window.location.href = '/'
       }
     } catch (err: any) {
       setError(err.message)
@@ -97,8 +96,8 @@ export default function SignInPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border 
-                border-gray-300 dark:border-gray-200 placeholder-white-500 dark:placeholder-gray-400 text-gray-900 
-                dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 
+                border-gray-300 dark:border-gray-200 placeholder-white-500 dark:placeholder-gray-400 text-black 
+                dark:text-gray-500 rounded-t-md focus:outline-none focus:ring-[#548746] focus:border-[#548746] focus:z-10 
                 sm:text-sm bg-gray-50 dark:bg-white-700"
                 placeholder="Email address (@buffalo.edu)"
               />
@@ -116,8 +115,8 @@ export default function SignInPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 
-                dark:border-gray-200 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-b-md 
-                focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-50"
+                dark:border-gray-200 placeholder-gray-500 dark:placeholder-gray-400 text-gray-500 dark:text-gray-500 rounded-b-md 
+                focus:outline-none focus:ring-[#548746] focus:border-[#548746] focus:z-10 sm:text-sm bg-white dark:bg-gray-50"
                 placeholder="Password"
               />
             </div>
