@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import RoomListingForm, { RoomFormData } from "../../components/RoomListingForm";
 import { v4 as uuidv4 } from "uuid";
 
@@ -61,21 +62,52 @@ const FAKE_POSTS: PostWithId[] = [
 ];
 
 export default function ExplorePage() {
+  const searchParams = useSearchParams();
   const [posts, setPosts] = useState<PostWithId[]>([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [newCommunity, setNewCommunity] = useState("");
   const [communities, setCommunities] = useState<string[]>([]);
+  const [userCommunities, setUserCommunities] = useState<string[]>([]);
+  const [allUserCreatedCommunities, setAllUserCreatedCommunities] = useState<string[]>([]);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [_, forceUpdate] = useState(0);
+  const [showUserCommunitiesDropdown, setShowUserCommunitiesDropdown] = useState(false);
 
+  // Load initial data from localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("create") === "1") setShowForm(true);
+      // Load user's joined communities
+      try {
+        const raw = localStorage.getItem("userCommunities");
+        if (raw) setUserCommunities(JSON.parse(raw));
+      } catch (e) {
+        setUserCommunities([]);
+      }
+
+      // Load all user-created communities (global list)
+      try {
+        const allCommunitiesRaw = localStorage.getItem("allUserCreatedCommunities");
+        if (allCommunitiesRaw) setAllUserCreatedCommunities(JSON.parse(allCommunitiesRaw));
+      } catch (e) {
+        setAllUserCreatedCommunities([]);
+      }
     }
   }, []);
+
+  // React to URL parameter changes
+  useEffect(() => {
+    const createParam = searchParams.get("create");
+    if (createParam === "1") setShowForm(true);
+
+    const filterParam = searchParams.get("filter");
+    if (filterParam) {
+      setSearch(filterParam);
+    } else {
+      setSearch("");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setPosts(FAKE_POSTS);
@@ -110,10 +142,43 @@ export default function ExplorePage() {
 
   function handleAddCommunity(e: React.FormEvent) {
     e.preventDefault();
-    if (newCommunity.trim() && !communities.includes(newCommunity.trim())) {
-      setCommunities(prev => [...prev, newCommunity.trim()]);
+    const trimmed = newCommunity.trim();
+    if (trimmed && !FAKE_COMMUNITIES.includes(trimmed) && !allUserCreatedCommunities.includes(trimmed)) {
+      // Add to user's joined communities
+      const updatedUserCommunities = [...userCommunities, trimmed];
+      setUserCommunities(updatedUserCommunities);
+
+      // Add to global list of all user-created communities
+      const updatedAllCommunities = [...allUserCreatedCommunities, trimmed];
+      setAllUserCreatedCommunities(updatedAllCommunities);
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userCommunities", JSON.stringify(updatedUserCommunities));
+        localStorage.setItem("allUserCreatedCommunities", JSON.stringify(updatedAllCommunities));
+        window.dispatchEvent(new CustomEvent("userCommunitiesChanged", { detail: updatedUserCommunities }));
+      }
       setNewCommunity("");
       setShowCommunityModal(false);
+    }
+  }
+
+  function joinCommunity(communityName: string) {
+    if (!userCommunities.includes(communityName)) {
+      const updated = [...userCommunities, communityName];
+      setUserCommunities(updated);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userCommunities", JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent("userCommunitiesChanged", { detail: updated }));
+      }
+    }
+  }
+
+  function leaveCommunity(communityName: string) {
+    const updated = userCommunities.filter(c => c !== communityName);
+    setUserCommunities(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("userCommunities", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("userCommunitiesChanged", { detail: updated }));
     }
   }
 
@@ -121,7 +186,10 @@ export default function ExplorePage() {
     p => typeof window !== "undefined" && window.localStorage.getItem(`like_${p.id}`) === "1"
   );
 
-  const filtered = search && communities.includes(search)
+  // Check if search matches any community (preset or user-created)
+  const isSearchingCommunity = search && (communities.includes(search) || allUserCreatedCommunities.includes(search));
+
+  const filtered = isSearchingCommunity
     ? posts.filter(p => p.community === search)
     : posts.filter(
         p =>
@@ -141,9 +209,38 @@ export default function ExplorePage() {
     forceUpdate(n => n + 1);
   }
 
+  // Current filter can be a preset community or user-created community
+  const currentFilter = search && (communities.includes(search) || allUserCreatedCommunities.includes(search)) ? search : null;
+  const isJoined = currentFilter ? userCommunities.includes(currentFilter) : false;
+
   return (
-    <main className="py-20 bg-[#F5EEE6] min-h-screen">
+    <main className="pt-8 pb-20 bg-white min-h-screen">
       <div className="mx-auto max-w-4xl px-6 text-[#356859]">
+
+        {/* Page Title */}
+        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#356859' }}>Explore</h1>
+
+        {/* Join Community Banner */}
+        {currentFilter && (
+          <div className="mb-6 p-4 bg-white rounded-lg border border-[#A87C5F] flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-[#356859]">{currentFilter}</h2>
+              <p className="text-sm text-gray-600">
+                {isJoined ? "You're a member of this community" : "Join to stay updated"}
+              </p>
+            </div>
+            <button
+              onClick={() => isJoined ? leaveCommunity(currentFilter) : joinCommunity(currentFilter)}
+              className={`px-4 py-2 rounded-full font-semibold transition ${
+                isJoined
+                  ? "bg-gray-200 text-[#356859] hover:bg-gray-300"
+                  : "bg-[#356859] text-white hover:bg-green-900"
+              }`}
+            >
+              {isJoined ? "Leave" : "Join"}
+            </button>
+          </div>
+        )}
 
         <div className="flex gap-4 mb-8">
           <button
@@ -171,9 +268,9 @@ export default function ExplorePage() {
           >
             All
           </button>
-          {communities.map(comm => (
+          {communities.map((comm, index) => (
             <button
-              key={comm}
+              key={`preset-${index}-${comm}`}
               onClick={() => setSearch(comm)}
               className={`px-3 py-1 rounded-full border transition font-medium ${
                 search === comm
@@ -184,6 +281,51 @@ export default function ExplorePage() {
               {comm}
             </button>
           ))}
+
+          {/* User-Created Communities Dropdown */}
+          {allUserCreatedCommunities.length > 0 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowUserCommunitiesDropdown(!showUserCommunitiesDropdown)}
+                className={`px-3 py-1 rounded-full border transition font-medium flex items-center gap-1 ${
+                  search && allUserCreatedCommunities.includes(search)
+                    ? "bg-[#356859] text-white border-[#A87C5F]"
+                    : "border-[#A87C5F] bg-[#F5EEE6] text-[#356859] hover:bg-[#356859] hover:text-white"
+                }`}
+              >
+                User Communities
+                <svg
+                  className={`w-4 h-4 transform transition-transform ${showUserCommunitiesDropdown ? 'rotate-180' : 'rotate-0'}`}
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M6 8L10 12L14 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {showUserCommunitiesDropdown && (
+                <div className="absolute top-full mt-1 bg-white border border-[#A87C5F] rounded shadow-lg z-10 min-w-[200px]">
+                  {allUserCreatedCommunities.map((comm, index) => (
+                    <button
+                      key={`user-comm-${index}-${comm}`}
+                      onClick={() => {
+                        setSearch(comm);
+                        setShowUserCommunitiesDropdown(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm transition ${
+                        search === comm
+                          ? "bg-[#356859] text-white font-semibold"
+                          : "text-[#356859] hover:bg-[#F5EEE6]"
+                      }`}
+                    >
+                      {comm}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {favorites.length > 0 && (
@@ -261,7 +403,7 @@ export default function ExplorePage() {
         {showForm &&
           <RoomListingForm
             onCreate={handleCreate}
-            communities={communities}
+            communities={[...communities.filter(c => userCommunities.includes(c)), ...userCommunities.filter(c => !communities.includes(c))]}
           />
         }
         {filtered.length === 0 && (
@@ -270,6 +412,7 @@ export default function ExplorePage() {
         <div className="space-y-8">
           {filtered.map(p => {
             const isFavorited = typeof window !== "undefined" && window.localStorage.getItem(`like_${p.id}`) === "1";
+            const postCommunityJoined = p.community ? userCommunities.includes(p.community) : false;
             return (
             <article key={p.id} className="rounded-md border border-[#A87C5F] bg-white p-4 relative">
               <Link
@@ -279,8 +422,24 @@ export default function ExplorePage() {
                 {p.title}
               </Link>
               {p.community && (
-                <span className="ml-2 text-sm bg-[#F5EEE6] text-[#A87C5F] px-2 py-1 rounded">
-                  {p.community}
+                <span className="ml-2 inline-flex items-center gap-2">
+                  <span className="text-sm bg-[#F5EEE6] text-[#A87C5F] px-2 py-1 rounded">
+                    {p.community}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      postCommunityJoined ? leaveCommunity(p.community!) : joinCommunity(p.community!);
+                      forceUpdate(n => n + 1);
+                    }}
+                    className={`text-xs px-2 py-1 rounded-full font-medium transition ${
+                      postCommunityJoined
+                        ? "bg-[#356859] text-white"
+                        : "border border-[#356859] text-[#356859] hover:bg-[#356859] hover:text-white"
+                    }`}
+                  >
+                    {postCommunityJoined ? "Joined" : "Join"}
+                  </button>
                 </span>
               )}
               <div className="font-bold text-[#356859]">${p.price}</div>

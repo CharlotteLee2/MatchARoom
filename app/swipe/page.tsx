@@ -40,15 +40,16 @@ export default function SwipePage() {
   }, []);
 
   return (
-    <main className="py-20">
+    <main className="pt-8 pb-20">
       <div className="mx-auto max-w-md px-6 text-center text-gray-700">
-        <h2 className="text-3xl font-semibold mb-4">Swipe</h2>
+        {/* Page Title */}
+        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#356859' }}>Swipe</h1>
         <div className="mb-6 space-y-2">
   <p className="text-gray-600">
     Swipe left or right to explore roommate profiles!
   </p>
   <p className="text-sm text-gray-500">
-    <span className="font-semibold text-red-500">Swipe left</span> to pass • 
+    <span className="font-semibold text-red-500">Swipe left</span> to pass •
     <span className="font-semibold text-green-500"> Swipe right</span> to match
   </p>
 </div>
