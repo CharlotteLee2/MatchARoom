@@ -76,21 +76,16 @@ export default function ForumPage() {
   const [communities, setCommunities] = useState<string[]>([]);
   const [modalImage, setModalImage] = useState<string | null>(null);
 
+  // Always reset to fake demo data on every reload
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedPosts = window.localStorage.getItem("forumposts");
-    const storedComms = window.localStorage.getItem("communities");
-
-    if (!storedPosts && !storedComms) {
-      setPosts(FAKE_POSTS);
-      setCommunities(FAKE_COMMUNITIES);
+    setPosts(FAKE_POSTS);
+    setCommunities(FAKE_COMMUNITIES);
+    if (typeof window !== "undefined") {
       window.localStorage.setItem("forumposts", JSON.stringify(FAKE_POSTS));
       window.localStorage.setItem("communities", JSON.stringify(FAKE_COMMUNITIES));
-    } else {
-      if (storedPosts) setPosts(JSON.parse(storedPosts));
-      if (storedComms) setCommunities(JSON.parse(storedComms));
     }
   }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem("forumposts", JSON.stringify(posts));
@@ -150,6 +145,16 @@ export default function ForumPage() {
             </button>
           </div>
         </div>
+        {/* DEMO RESET BUTTON */}
+        <button
+          onClick={() => {
+            localStorage.clear();
+            window.location.reload();
+          }}
+          className="rounded bg-red-500 px-4 py-2 text-white mb-7"
+        >
+          Reset to Demo Data
+        </button>
 
         {/* COMMUNITY MODAL */}
         {showCommunityModal && (

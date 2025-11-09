@@ -123,7 +123,6 @@ export default function PostDetailPage() {
             >&times;</button>
           </div>
         )}
-        {/* COMMENT THREAD */}
         <div className="bg-white rounded-lg shadow p-4">
           <h4 className="font-semibold text-gray-700 mb-3 text-base">Comments</h4>
           <ul className="mb-3 space-y-2 text-[15px]">
