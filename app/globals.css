@@ -68,13 +68,13 @@ body {
 }
 
 .overlay.like {
+  right: 20px;
+  left: auto;
   color: #2ecc71;
   border: 2px solid #2ecc71;
 }
 
 .overlay.nope {
-  right: 20px;
-  left: auto;
   color: #e74c3c;
   border: 2px solid #e74c3c;
 }
