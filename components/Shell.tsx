@@ -13,7 +13,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <Header onToggleChat={() => setShowChat((s) => !s)} />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6 lg:ml-56">{children}</main>
+        <main className="flex-1 p-6 lg:ml-64">{children}</main>
       </div>
       {showChat && <ChatBox onClose={() => setShowChat(false)} />}
     </div>

@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { createProfileStack } from "./card";
+import PageTransition from "../../components/PageTransition";
 
 // Page is a client component (contains pointer interactions). Metadata removed to keep this file client-only.
 
@@ -110,9 +111,10 @@ export default function SwipePage() {
 
   return (
     <main className="pt-8 pb-20">
-      <div className="mx-auto max-w-md px-6 text-center text-gray-700">
-        {/* Page Title */}
-        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#548746' }}>Swipe</h1>
+      <PageTransition>
+        <div className="mx-auto max-w-md px-6 text-center text-gray-700">
+          {/* Page Title */}
+          <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#548746' }}>Swipe</h1>
         <div className="mb-6 space-y-2">
   <p className="text-gray-600">
     Swipe left or right to explore roommate profiles!
@@ -128,14 +130,15 @@ export default function SwipePage() {
           className="relative w-full h-[450px] flex justify-center items-center"
         ></div>
         <div className="flex gap-4 mt-6 justify-center">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             Back to Home
           </Link>
         </div>
-      </div>
+        </div>
+      </PageTransition>
     </main>
   );
 }
